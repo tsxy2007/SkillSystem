@@ -20,6 +20,8 @@
 #include "Widgets/Text/SInlineEditableTextBlock.h"
 #include "SLevelOfDetailBranchNode.h"
 #include "SkillTreeColors.h"
+#include "SkillGraphNode.h"
+#include "SkillGraphNode_Root.h"
 
 #define LOCTEXT_NAMESPACE "SkillTreeEditor"
 
@@ -154,7 +156,7 @@ void SGraphNode_SkillTree::UpdateGraphNode()
 	USkillGraphNode* STNode = Cast<USkillGraphNode>(GraphNode);
 	if (STNode)
 	{
-	
+		
 	}
 
 	TSharedPtr<SNodeTitle> NodeTile = SNew(SNodeTitle, GraphNode);
@@ -248,16 +250,121 @@ void SGraphNode_SkillTree::UpdateGraphNode()
 						]
 					]
 				]
+				+SOverlay::Slot()
+				.HAlign(HAlign_Fill)
+				.VAlign(VAlign_Top)
+				[
+					SNew(SBorder)
+					.BorderBackgroundColor(SkillTreeColors::Action::DragMarker)
+					.ColorAndOpacity(SkillTreeColors::Action::DragMarker)
+					.BorderImage(FEditorStyle::GetBrush("BTEditor.Graph.BTNode.Body"))
+					.Visibility(this, &SGraphNode_SkillTree::GetDragOverMarkerVisibility)
+					[
+						SNew(SBox)
+						.HeightOverride(4)
+					]
+				]
+				// Blueprint indicator overlay
+				+SOverlay::Slot()
+				.HAlign(HAlign_Left)
+				.VAlign(VAlign_Top)
+				[
+					SNew(SImage)
+					.Image(FEditorStyle::GetBrush(TEXT("BTEditor.Graph.BTNode.Blueprint")))
+					.Visibility(this, &SGraphNode_SkillTree::GetBlueprintIconVisibility)
+				]
 			]
 		];
+
+	// Create comment bubble
+	TSharedPtr<SCommentBubble> CommentBubble;
+	const FSlateColor CommentColor = GetDefault<UGraphEditorSettings>()->DefaultCommentNodeTitleColor;
+
+	SAssignNew(CommentBubble, SCommentBubble)
+		.GraphNode(GraphNode)
+		.Text(this, &SGraphNode::GetNodeComment)
+		.OnTextCommitted(this, &SGraphNode::OnCommentTextCommitted)
+		.ColorAndOpacity(CommentColor)
+		.AllowPinning(true)
+		.EnableTitleBarBubble(true)
+		.EnableBubbleCtrls(true)
+		.GraphLOD(this, &SGraphNode::GetCurrentLOD)
+		.IsGraphNodeHovered(this, &SGraphNode::IsHovered);
+
+	GetOrAddSlot(ENodeZone::TopCenter)
+		.SlotOffset(TAttribute<FVector2D>(CommentBubble.Get(), &SCommentBubble::GetOffset))
+		.SlotSize(TAttribute<FVector2D>(CommentBubble.Get(), &SCommentBubble::GetSize))
+		.AllowScaling(TAttribute<bool>(CommentBubble.Get(), &SCommentBubble::IsScalingAllowed))
+		.VAlign(VAlign_Top)
+		[
+			CommentBubble.ToSharedRef()
+		];
+	
+	CreatePinWidgets();
 }
 
 void SGraphNode_SkillTree::CreatePinWidgets()
 {
+	USkillGraphNode* StateNode = CastChecked<USkillGraphNode>(GraphNode);
+	for (int32 PinIdx = 0;PinIdx < StateNode->Pins.Num();PinIdx++)
+	{
+		UEdGraphPin* MyPin = StateNode->Pins[PinIdx];
+		if (!MyPin->bHidden)
+		{
+			TSharedPtr<SGraphPin> NewPin = SNew(SSkillTreePin, MyPin)
+				.ToolTipText(this, &SGraphNode_SkillTree::GetPinTooltip, MyPin);
+			AddPin(NewPin.ToSharedRef());
+		}
+	}
 }
 
 void SGraphNode_SkillTree::AddPin(const TSharedRef<SGraphPin>& PinToAdd)
 {
+	PinToAdd->SetOwner(SharedThis(this));
+	const UEdGraphPin* PinObj = PinToAdd->GetPinObj();
+	const bool bAdvanceParameter = PinObj && PinObj->bAdvancedView;
+	if (bAdvanceParameter)
+	{
+		PinToAdd->SetVisibility(TAttribute<EVisibility>(PinToAdd, &SGraphPin::IsPinVisibleAsAdvanced));
+	}
+	if (PinToAdd->GetDirection() == EEdGraphPinDirection::EGPD_Input)
+	{
+		LeftNodeBox->AddSlot()
+			.HAlign(HAlign_Fill)
+			.VAlign(VAlign_Fill)
+			.FillHeight(1.f)
+			.Padding(20.f, 0.f)
+			[
+				PinToAdd
+			];
+		InputPins.Add(PinToAdd);
+	}
+	else
+	{
+		const bool bIsSingleTaskPin = PinObj && (PinObj->PinType.PinCategory == USkillTreeEditorTypes::PinCategory_SingleTask);
+		if (bIsSingleTaskPin)
+		{
+			OutputPinBox->AddSlot()
+				.HAlign(HAlign_Fill)
+				.VAlign(VAlign_Fill)
+				.FillWidth(0.4f)
+				.Padding(0, 0, 20.0f, 0)
+				[
+					PinToAdd
+				];
+		}
+		else
+		{
+			OutputPinBox->AddSlot()
+				.HAlign(HAlign_Fill)
+				.VAlign(VAlign_Fill)
+				.FillWidth(1.0f)
+				[
+					PinToAdd
+				];
+		}
+		OutputPins.Add(PinToAdd);
+	}
 }
 
 TSharedPtr<SToolTip> SGraphNode_SkillTree::GetComplexTooltip()
@@ -325,17 +432,69 @@ EVisibility SGraphNode_SkillTree::GetBlueprintIconVisibility() const
 
 EVisibility SGraphNode_SkillTree::GetIndexVisibility() const
 {
-	return EVisibility();
+	// always hide the index on the root node
+	if (GraphNode->IsA(USkillGraphNode_Root::StaticClass()))
+	{
+		return EVisibility::Collapsed;
+	}
+	USkillGraphNode* StateNode = CastChecked<USkillGraphNode>(GraphNode);
+	UEdGraphPin* MyInputPin = StateNode->GetInputPin();
+	UEdGraphPin* MyParentOutputPin = nullptr;
+	if (MyInputPin != nullptr && MyInputPin->LinkedTo.Num() > 0)
+	{
+		MyParentOutputPin = MyInputPin->LinkedTo[0];
+	}
+
+	CA_SUPPRESS(6235);
+	const bool bCanShowIndex = (bShowExecutionIndexInEditorMode || GEditor->bIsSimulatingInEditor || GEditor->PlayWorld != NULL) || (MyParentOutputPin && MyParentOutputPin->LinkedTo.Num() > 1);
+
+	TSharedPtr<SGraphPanel> MyOwnerPanel = GetOwnerPanel();
+	return (bCanShowIndex && (!MyOwnerPanel.IsValid() || MyOwnerPanel->GetCurrentLOD() > EGraphRenderingLOD::LowDetail)) ? EVisibility::Visible : EVisibility::Collapsed;
 }
 
 FText SGraphNode_SkillTree::GetIndexText() const
 {
-
-	return FText();
+	USkillGraphNode* StateNode = CastChecked<USkillGraphNode>(GraphNode);
+	UEdGraphPin* MyInputPin = StateNode->GetInputPin();
+	UEdGraphPin* MyParentOutputPin = nullptr;
+	if (MyInputPin != nullptr && MyInputPin->LinkedTo.Num() > 0)
+	{
+		MyParentOutputPin = MyInputPin->LinkedTo[0];
+	}
+	int32 Index = 0;
+	CA_SUPPRESS(6235);
+	if (bShowExecutionIndexInEditorMode || GEditor->bIsSimulateInEditorQueued || GEditor->PlayWorld != nullptr)
+	{
+		USTNode* STNode = Cast<USTNode>(StateNode->NodeInstance);
+		Index = (STNode&&STNode->GetExecutionIndex() < 0xfff) ? STNode->GetExecutionIndex() : -1;
+	}
+	else
+	{
+		if (MyParentOutputPin != nullptr)
+		{
+			for (Index = 0 ;Index<MyParentOutputPin->LinkedTo.Num();Index++)
+			{
+				if (MyParentOutputPin->LinkedTo[Index] == MyInputPin)
+				{
+					break;
+				}
+			}
+		}
+	}
+	return FText::AsNumber(Index);
 }
 
 FText SGraphNode_SkillTree::GetIndexTooltipText() const
 {
+	CA_SUPPRESS(6235);
+	if (bShowExecutionIndexInEditorMode|| GEditor->bIsSimulatingInEditor||GEditor->PlayWorld != nullptr)
+	{
+		return LOCTEXT("ExecutionIndexToolTip", "Execution Index: this shows the order in which nodes are executed.");
+	}
+	else
+	{
+		return LOCTEXT("ChildIndexToolTip", "Child index: this shows the order in which child nodes are executed.");
+	}
 	return FText();
 }
 

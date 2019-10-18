@@ -22,6 +22,9 @@
 #include "SkillTreeColors.h"
 #include "SkillGraphNode.h"
 #include "SkillGraphNode_Root.h"
+#include "SkillGraphNode_Service.h"
+#include "SkillGraphNode_Composite.h"
+#include "STCompositeNode.h"
 
 #define LOCTEXT_NAMESPACE "SkillTreeEditor"
 
@@ -97,7 +100,7 @@ public:
 					[
 						SNew(STextBlock)
 						.Text(InArgs._Text)
-					.Font(FEditorStyle::GetFontStyle("BTEditor.Graph.BTNode.IndexText"))
+						.Font(FEditorStyle::GetFontStyle("BTEditor.Graph.BTNode.IndexText"))
 					]
 				]
 			];
@@ -384,6 +387,27 @@ TSharedRef<SGraphNode> SGraphNode_SkillTree::GetNodeUnderMouse(const FGeometry &
 
 void SGraphNode_SkillTree::MoveTo(const FVector2D & NewPosition, FNodeSet & NodeFilter)
 {
+	SGraphNodeST::MoveTo(NewPosition, NodeFilter);
+	USkillGraphNode* STGraphNode = Cast<USkillGraphNode>(GraphNode);
+	if (STGraphNode && !STGraphNode->IsSubNode())
+	{
+		USkillEdGraph* STGraph = STGraphNode->GetSkillGraph();
+		if (STGraph)
+		{
+			for (int32 i = 0; i < STGraphNode->Pins.Num(); i++)
+			{
+				UEdGraphPin* Pin = STGraphNode->Pins[i];
+				if (Pin	&& Pin->Direction == EGPD_Input && Pin->LinkedTo.Num() == 1)
+				{
+					UEdGraphPin* ParentPin = Pin->LinkedTo[0];
+					if (ParentPin)
+					{
+						//STGraph->REbui
+					}
+				}
+			}
+		}
+	}
 }
 
 FReply SGraphNode_SkillTree::OnMouseButtonDoubleClick(const FGeometry & InMyGeometry, const FPointerEvent & InMouseEvent)
@@ -412,17 +436,55 @@ EVisibility SGraphNode_SkillTree::GetDebuggerSearchFailedMarkerVisility() const
 
 FSlateColor SGraphNode_SkillTree::GetBorderBackgroundColor() const
 {
-	return FSlateColor();
+	USkillGraphNode* STGraphNode = Cast<USkillGraphNode>(GraphNode);
+	USkillGraphNode* STParentNode = STGraphNode ? Cast<USkillGraphNode>(STGraphNode->ParentNode) : nullptr;
+	const bool bSelectSubNode = STParentNode && GetOwnerPanel()->SelectionManager.SelectedNodes.Contains(GraphNode);
+	USTNode* NodeInstance = STGraphNode ? Cast<USTNode>(STGraphNode->NodeInstance) : nullptr;
+	
+	const bool bIsConnectedTreeRoot = STGraphNode && 
+		STGraphNode->IsA<USkillGraphNode_Root>() && 
+		STGraphNode->Pins.IsValidIndex(0) &&
+		STGraphNode->Pins[0]->LinkedTo.Num() > 0;
+	const bool bIsDisconnected = NodeInstance && NodeInstance->GetExecutionIndex() == MAX_uint16;
+	const bool bIsService = STGraphNode && STGraphNode->IsA(USkillGraphNode_Service::StaticClass());
+	//const bool bIsRootDecorator = STGraphNode;
+	//const bool bIsInjected = STGraphNode&& STGraphNode->binje
+
+	return bSelectSubNode ? SkillTreeColors::NodeBorder::Selected : bIsDisconnected ? SkillTreeColors::NodeBorder::Root : SkillTreeColors::NodeBorder::Inactive;
 }
 
 FSlateColor SGraphNode_SkillTree::GetBackgroundColor() const
 {
-	return FSlateColor();
+	USkillGraphNode* STGraphNode = Cast<USkillGraphNode>(GraphNode);
+	
+	FLinearColor NodeColor = SkillTreeColors::NodeBody::Default;
+	if (STGraphNode && STGraphNode->HasErrors())
+	{
+		NodeColor = SkillTreeColors::NodeBody::Error;
+	}
+	else if (Cast<USkillGraphNode_Composite>(GraphNode))
+	{
+		check(STGraphNode);
+		USTCompositeNode* CompositeNodeInstance = Cast<USTCompositeNode>(STGraphNode->NodeInstance);
+		const bool bIsScoped = CompositeNodeInstance && false;
+		NodeColor = bIsScoped ? SkillTreeColors::NodeBody::CompositeScoped : SkillTreeColors::NodeBody::Composite;
+	}
+	else if (Cast<USkillGraphNode_Service>(GraphNode))
+	{
+		NodeColor = SkillTreeColors::NodeBody::Service;
+	}
+	else if (Cast<USkillGraphNode_Root>(GraphNode) && GraphNode->Pins.IsValidIndex(0)&& GraphNode->Pins[0]->LinkedTo.Num()>0)
+	{
+		NodeColor = SkillTreeColors::NodeBody::Root;
+	}
+
+	return (FlashAlpha > 0.f) ? FMath::Lerp(NodeColor, FlashColor, FlashAlpha) : NodeColor;
 }
 
 const FSlateBrush * SGraphNode_SkillTree::GetNameIcon() const
 {
-	return nullptr;
+	USkillGraphNode* STGraphNode = Cast<USkillGraphNode>(GraphNode);
+	return STGraphNode != nullptr ? FEditorStyle::GetBrush(STGraphNode->GetNameIcon()) : FEditorStyle::GetBrush(TEXT("BTEditor.Graph.BTNode.Icon"));
 }
 
 EVisibility SGraphNode_SkillTree::GetBlueprintIconVisibility() const

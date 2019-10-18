@@ -63,4 +63,11 @@ void USTNode::OnGameplayTaskActivated(UGameplayTask & Task)
 void USTNode::OnGameplayTaskDeactivated(UGameplayTask & Task)
 {
 }
+#if WITH_EDITOR
 
+FName USTNode::GetNodeIconName() const
+{
+	return NAME_None;
+}
+
+#endif

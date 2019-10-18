@@ -13,7 +13,16 @@ UCLASS()
 class SKILLSYSTEMEDITOR_API USkillEdGraph : public UEdGraph
 {
 	GENERATED_UCLASS_BODY()
+	
+	enum EUpdateFlags
+	{
+		RebuildGraph = 0,
+		ClearDebuggerFlags = 1,
+		KeepRebuildCounter = 2,
+	};
 
+	UPROPERTY()
+	int32 ModCounter;
 public:
 	UPROPERTY()
 	int32 GrapVersion;
@@ -25,6 +34,8 @@ public:
 	virtual void UpdateAsset(int32 UpdateFlags = 0);
 	virtual void UpdateVersion();
 	virtual void MarkVersion();
+
+	void CreateSTFromGraph(class USkillTreeGraphNode* RootEdNode);
 
 	virtual void OnSubNodeDropped();
 	virtual void OnNodesPasted(const FString& ImportStr);
@@ -38,6 +49,8 @@ public:
 	bool IsLocked()const;
 	void LockedUpdates();
 	void UnlockUpdates();
+
+	void RebuildChildOrder(UEdGraphNode* ParentNode);
 
 	virtual void Serialize(FArchive& Ar) override;
 protected:

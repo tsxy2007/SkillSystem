@@ -14,6 +14,10 @@ UCLASS()
 class SKILLSYSTEMEDITOR_API USkillGraphNode : public UEdGraphNode
 {
 	GENERATED_UCLASS_BODY()
+
+public:
+	UPROPERTY()
+		TArray<USkillGraphNode*> Services;
 public:
 
 	//~beging UEDGraphNode Interface
@@ -39,6 +43,8 @@ public:
 	virtual UEdGraphPin* GetInputPin(int32 InputIndex = 0)const;
 	virtual UEdGraphPin* GetOutputPin(int32 InputIndex = 0)const;
 	virtual UEdGraph* GetBoundGraph()const { return NULL; }
+
+	virtual FName GetNameIcon()const;
 
 
 	void AddSubNode(USkillGraphNode* SubNode, class UEdGraph* ParentGraph);

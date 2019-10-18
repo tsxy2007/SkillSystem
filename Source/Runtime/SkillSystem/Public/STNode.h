@@ -64,6 +64,10 @@ public:
 #if USE_SKILLTREE_DEBUGGER
 	USTNode* GetNextNode()const;
 #endif
+
+#if WITH_EDITOR
+	virtual FName GetNodeIconName()const;
+#endif
 	uint16 GetExecutionIndex()const;
 	uint16 GetMemoryOffset()const;
 	uint8 GetTreeDepth()const;

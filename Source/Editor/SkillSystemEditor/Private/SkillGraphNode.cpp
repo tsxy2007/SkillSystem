@@ -12,12 +12,19 @@
 #include "UObject/Class.h"
 #include "UObject/UnrealType.h"
 #include "Engine/Blueprint.h"
+#include "STNode.h"
 
 #define LOCTEXT_NAMESPACE "SKILLGraph"
 USkillGraphNode::USkillGraphNode(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
 
+}
+
+FName USkillGraphNode::GetNameIcon() const
+{
+	USTNode* STNodeInstance = Cast<USTNode>(NodeInstance);
+	return STNodeInstance != nullptr ? STNodeInstance->GetNodeIconName() : FName("BTEditor.Graph.BTNode.Icon");
 }
 
 void USkillGraphNode::AddSubNode(USkillGraphNode* SubNode, class UEdGraph* ParentGraph)

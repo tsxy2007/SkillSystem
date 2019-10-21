@@ -38,7 +38,7 @@ void USkillEdGraph::UpdateAsset(int32 UpdateFlags /*= 0*/)
 	USkillGraphNode_Root* RootNode = nullptr;
 	for (int32 Index = 0; Index < Nodes.Num(); ++Index)
 	{
-		USkillGraphNode* Node = Cast<USkillGraphNode>(Nodes[Index]);
+		USkillTreeGraphNode* Node = Cast<USkillTreeGraphNode>(Nodes[Index]);
 		if (Node == nullptr)
 		{
 			continue;
@@ -69,7 +69,7 @@ void USkillEdGraph::UpdateAsset(int32 UpdateFlags /*= 0*/)
 	UEdGraphPin::ResolveAllPinReferences();
 	if (RootNode && RootNode->Pins.Num() > 0 && RootNode->Pins[0]->LinkedTo.Num() > 0)
 	{
-		USkillGraphNode* Node = Cast<USkillGraphNode>(RootNode->Pins[0]->LinkedTo[0]->GetOwningNode());
+		USkillTreeGraphNode* Node = Cast<USkillTreeGraphNode>(RootNode->Pins[0]->LinkedTo[0]->GetOwningNode());
 		if (Node)
 		{
 			CreateSTFromGraph(Node);

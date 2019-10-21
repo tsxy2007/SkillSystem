@@ -17,6 +17,7 @@ class SKILLSYSTEMEDITOR_API USkillTreeGraphNode : public USkillGraphNode
 public:
 	UPROPERTY()
 	TArray<USkillTreeGraphNode*> Services;
+public:
 
 	//~begin UEdgraphNode Interface
 	virtual class USkillEdGraph* GetSkillTreeGraph();

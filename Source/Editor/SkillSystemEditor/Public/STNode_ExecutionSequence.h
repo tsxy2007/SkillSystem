@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SkillGraphNode.h"
+#include "SkillTreeGraphNode.h"
 #include "Textures/SlateIcon.h"
 #include "S2Node_AddPinInterface.h"
 #include "EdGraph/EdGraphPin.h"
@@ -13,7 +13,7 @@
  * 
  */
 UCLASS()
-class SKILLSYSTEMEDITOR_API USTNode_ExecutionSequence : public USkillGraphNode ,public IS2Node_AddPinInterface
+class SKILLSYSTEMEDITOR_API USTNode_ExecutionSequence : public USkillTreeGraphNode,public IS2Node_AddPinInterface
 {
 	GENERATED_UCLASS_BODY()
 public:

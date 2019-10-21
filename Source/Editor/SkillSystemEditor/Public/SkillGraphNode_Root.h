@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SkillGraphNode.h"
+#include "SkillTreeGraphNode.h"
 #include "Textures/SlateIcon.h"
 #include "SkillGraphNode_Root.generated.h"
 
@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class SKILLSYSTEMEDITOR_API USkillGraphNode_Root : public USkillGraphNode
+class SKILLSYSTEMEDITOR_API USkillGraphNode_Root : public USkillTreeGraphNode
 {
 	GENERATED_UCLASS_BODY()
 public:

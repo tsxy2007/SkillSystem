@@ -16,7 +16,7 @@
 class SHorizontalBox;
 class SToolTip;
 class SVerticalBox;
-class USkillGraphNode;
+class USTGraphNode;
 /**
  * 
  */
@@ -29,7 +29,7 @@ public:
 public:
 
 	/** Constructs this widget with InArgs */
-	void Construct(const FArguments& InArgs, USkillGraphNode*InNode);
+	void Construct(const FArguments& InArgs, USTGraphNode*InNode);
 
 	// SGraphNode interface
 	virtual void UpdateGraphNode() override;

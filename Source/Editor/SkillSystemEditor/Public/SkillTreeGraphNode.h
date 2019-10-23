@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SkillGraphNode.h"
+#include "STGraphNode.h"
 #include "SkillTreeGraphNode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SKILLSYSTEMEDITOR_API USkillTreeGraphNode : public USkillGraphNode
+class SKILLSYSTEMEDITOR_API USkillTreeGraphNode : public USTGraphNode
 {
 	GENERATED_UCLASS_BODY()
 
@@ -34,11 +34,11 @@ public:
 	virtual FText GetDescription() const override;
 	virtual bool HasErrors() const override;
 	virtual void InitializeInstance() override;
-	virtual void OnSubNodeAdded(USkillGraphNode* SubNode) override;
-	virtual void OnSubNodeRemoved(USkillGraphNode* SubNode) override;
+	virtual void OnSubNodeAdded(USTGraphNode* SubNode) override;
+	virtual void OnSubNodeRemoved(USTGraphNode* SubNode) override;
 	virtual void RemoveAllSubNodes() override;
-	virtual int32 FindSubNodeDropIndex(USkillGraphNode* SubNode) const override;
-	virtual void InsertSubNodeAt(USkillGraphNode* SubNode, int32 DropIndex) override;
+	virtual int32 FindSubNodeDropIndex(USTGraphNode* SubNode) const override;
+	virtual void InsertSubNodeAt(USTGraphNode* SubNode, int32 DropIndex) override;
 
 	virtual bool CanPlaceBreakpoints()const { return false; }
 

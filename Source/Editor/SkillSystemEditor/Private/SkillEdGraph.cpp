@@ -2,7 +2,7 @@
 
 
 #include "SkillEdGraph.h"
-#include "SkillGraphNode.h"
+#include "STGraphNode.h"
 #include "SkillSystemEditor.h"
 #include "SkillTreeEditorTypes.h"
 #include "STNode.h"
@@ -122,7 +122,7 @@ bool USkillEdGraph::UpdateUnknownNodeClasses()
 	bool bUpdated = false;
 	for (int32 NodeIdx = 0; NodeIdx < Nodes.Num(); NodeIdx++)
 	{
-		USkillGraphNode* MyNode = Cast<USkillGraphNode>(Nodes[NodeIdx]);
+		USTGraphNode* MyNode = Cast<USTGraphNode>(Nodes[NodeIdx]);
 		if (MyNode)
 		{
 			const bool bUpdatedNode = MyNode->RefreshNodeClass();
@@ -140,7 +140,7 @@ bool USkillEdGraph::UpdateUnknownNodeClasses()
 	return bUpdated;
 }
 
-void UpdateSkillGraphNodeErrorMessage(USkillGraphNode& Node)
+void UpdateSkillGraphNodeErrorMessage(USTGraphNode& Node)
 {
 	if (Node.NodeInstance)
 	{
@@ -166,7 +166,7 @@ bool USkillEdGraph::UpdateDeprecatedClasses()
 {
 	for (int32 Idx = 0, IdxNum = Nodes.Num(); Idx < IdxNum; ++Idx)
 	{
-		USkillGraphNode* Node = Cast<USkillGraphNode>(Nodes[Idx]);
+		USTGraphNode* Node = Cast<USTGraphNode>(Nodes[Idx]);
 		if (Node != nullptr)
 		{
 			UpdateSkillGraphNodeErrorMessage(*Node);
@@ -191,7 +191,7 @@ void USkillEdGraph::UpdateClassData()
 {
 	for (int32 Idx = 0; Idx < Nodes.Num(); Idx++)
 	{
-		USkillGraphNode* Node = Cast<USkillGraphNode>(Nodes[Idx]);
+		USTGraphNode* Node = Cast<USTGraphNode>(Nodes[Idx]);
 		if (Node)
 		{
 

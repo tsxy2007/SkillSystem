@@ -3,7 +3,7 @@
 
 #include "EdGraphSchema_SkillTree.h"
 #include "ScopedTransaction.h"
-#include "SkillGraphNode.h"
+#include "STGraphNode.h"
 #include "EdGraph/EdGraph.h"
 #include "SkillSystemEditor.h"
 #include "SkillGraphTypes.h"
@@ -173,7 +173,7 @@ void UEdGraphSchema_SkillTree::GetGraphContextActions(FGraphContextMenuBuilder& 
 
 		UClass* GraphNodeClass = USkillGraphNode_Composite::StaticClass();
 
-		USkillGraphNode* OpNode = NewObject<USkillGraphNode>(ContextMenuBuilder.OwnerOfTemporaries, GraphNodeClass);
+		USTGraphNode* OpNode = NewObject<USTGraphNode>(ContextMenuBuilder.OwnerOfTemporaries, GraphNodeClass);
 		OpNode->ClassData = NodeClass;
 		AddOpAction->NodeTemplate = OpNode;
 	}

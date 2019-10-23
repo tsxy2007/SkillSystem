@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SkillGraphNode.h"
+#include "STGraphNode.h"
 #include "AssetData.h"
 #include "EdGraph/EdGraphSchema.h"
 #include "SkillGraphTypes.h"
@@ -15,19 +15,16 @@
 #include "STNode.h"
 
 #define LOCTEXT_NAMESPACE "SKILLGraph"
-USkillGraphNode::USkillGraphNode(const FObjectInitializer& ObjectInitializer)
+USTGraphNode::USTGraphNode(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
-
+	NodeInstance = nullptr;
+	CopySubNodeIndex = 0;
+	bIsReadOnly = false;
+	bIsSubNode = false;
 }
 
-FName USkillGraphNode::GetNameIcon() const
-{
-	USTNode* STNodeInstance = Cast<USTNode>(NodeInstance);
-	return STNodeInstance != nullptr ? STNodeInstance->GetNodeIconName() : FName("BTEditor.Graph.BTNode.Icon");
-}
-
-void USkillGraphNode::AddSubNode(USkillGraphNode* SubNode, class UEdGraph* ParentGraph)
+void USTGraphNode::AddSubNode(USTGraphNode* SubNode, class UEdGraph* ParentGraph)
 {
 	const FScopedTransaction Transaction(LOCTEXT("AddNode", "Add Node"));
 	ParentGraph->Modify();
@@ -48,58 +45,58 @@ void USkillGraphNode::AddSubNode(USkillGraphNode* SubNode, class UEdGraph* Paren
 	OnSubNodeAdded(SubNode);
 
 	ParentGraph->NotifyGraphChanged();
-	GetSkillGraph()->UpdateAsset();
+	GetSTGraph()->UpdateAsset();
 }
 
-void USkillGraphNode::RemoveSubNode(USkillGraphNode* SubNode)
+void USTGraphNode::RemoveSubNode(USTGraphNode* SubNode)
 {
 	SubNodes.RemoveSingle(SubNode);
 	Modify();
 	OnSubNodeRemoved(SubNode);
 }
 
-void USkillGraphNode::RemoveAllSubNodes()
+void USTGraphNode::RemoveAllSubNodes()
 {
 	SubNodes.Reset();
 }
 
-void USkillGraphNode::OnSubNodeRemoved(USkillGraphNode * SubNode)
+void USTGraphNode::OnSubNodeRemoved(USTGraphNode * SubNode)
 {
 }
 
-void USkillGraphNode::OnSubNodeAdded(USkillGraphNode * SubNode)
+void USTGraphNode::OnSubNodeAdded(USTGraphNode * SubNode)
 {
 }
 
-class USkillEdGraph* USkillGraphNode::GetSkillGraph()
+class USkillEdGraph* USTGraphNode::GetSTGraph()
 {
 	return CastChecked<USkillEdGraph>(GetGraph());
 }
 
-FText USkillGraphNode::GetDescription() const
+FText USTGraphNode::GetDescription() const
 {
 	FString StoredClassName = ClassData.GetClassName();
 	StoredClassName.RemoveFromEnd(TEXT("_C"));
 	return FText::Format(LOCTEXT("NodeClassError", "Class {0} not found , make sure it's saved!"), FText::FromString(StoredClassName));
 }
 
-void USkillGraphNode::PostCopyNode()
+void USTGraphNode::PostCopyNode()
 {
 	ResetNodeOwner();
 }
 
-bool USkillGraphNode::IsSubNode() const
+bool USTGraphNode::IsSubNode() const
 {
 	return bIsSubNode || (ParentNode != nullptr);
 }
 
-int32 USkillGraphNode::FindSubNodeDropIndex(USkillGraphNode * SubNode) const
+int32 USTGraphNode::FindSubNodeDropIndex(USTGraphNode * SubNode) const
 {
 	const int32 InsertIndex = SubNodes.IndexOfByKey(SubNode);
 	return InsertIndex;
 }
 
-void USkillGraphNode::InsertSubNodeAt(USkillGraphNode * SubNode, int32 DropIndex)
+void USTGraphNode::InsertSubNodeAt(USTGraphNode * SubNode, int32 DropIndex)
 {
 	if (DropIndex > -1)
 	{
@@ -111,11 +108,11 @@ void USkillGraphNode::InsertSubNodeAt(USkillGraphNode * SubNode, int32 DropIndex
 	}
 }
 
-void USkillGraphNode::InitializeInstance()
+void USTGraphNode::InitializeInstance()
 {
 }
 
-bool USkillGraphNode::RefreshNodeClass()
+bool USTGraphNode::RefreshNodeClass()
 {
 	bool bUpdate = false;
 	if (NodeInstance == nullptr)
@@ -133,7 +130,7 @@ bool USkillGraphNode::RefreshNodeClass()
 	return bUpdate;
 }
 
-void USkillGraphNode::UpdateNodeClassData()
+void USTGraphNode::UpdateNodeClassData()
 {
 	if (NodeInstance)
 	{
@@ -142,17 +139,17 @@ void USkillGraphNode::UpdateNodeClassData()
 	}
 }
 
-bool USkillGraphNode::UsesBlueprint() const
+bool USTGraphNode::UsesBlueprint() const
 {
 	return NodeInstance && NodeInstance->GetClass()->HasAnyClassFlags(CLASS_CompiledFromBlueprint);
 }
 
-bool USkillGraphNode::HasErrors() const
+bool USTGraphNode::HasErrors() const
 {
 	return ErrorMessage.Len() > 0 || NodeInstance == nullptr;
 }
 
-void USkillGraphNode::UpdateNodeClassDataFrom(UClass* InstanceClass, FSkillGraphNodeClassData& UpdatedData)
+void USTGraphNode::UpdateNodeClassDataFrom(UClass* InstanceClass, FSkillGraphNodeClassData& UpdatedData)
 {
 	if (InstanceClass)
 	{
@@ -168,7 +165,7 @@ void USkillGraphNode::UpdateNodeClassDataFrom(UClass* InstanceClass, FSkillGraph
 	}
 }
 
-void USkillGraphNode::AutowireNewNode(UEdGraphPin * FromPin)
+void USTGraphNode::AutowireNewNode(UEdGraphPin * FromPin)
 {
 	Super::AutowireNewNode(FromPin);
 	if (FromPin != nullptr)
@@ -185,7 +182,7 @@ void USkillGraphNode::AutowireNewNode(UEdGraphPin * FromPin)
 	}
 }
 
-void USkillGraphNode::PostPlacedNewNode()
+void USTGraphNode::PostPlacedNewNode()
 {
 	UClass* NodeClass = ClassData.GetClass(true);
 	if (NodeClass && (NodeInstance == nullptr))
@@ -201,7 +198,7 @@ void USkillGraphNode::PostPlacedNewNode()
 	}
 }
 
-void USkillGraphNode::PrepareForCopying()
+void USTGraphNode::PrepareForCopying()
 {
 	if (NodeInstance)
 	{
@@ -209,17 +206,17 @@ void USkillGraphNode::PrepareForCopying()
 	}
 }
 
-bool USkillGraphNode::CanDuplicateNode() const
+bool USTGraphNode::CanDuplicateNode() const
 {
 	return bIsReadOnly ? false : Super::CanDuplicateNode();
 }
 
-bool USkillGraphNode::CanUserDeleteNode() const
+bool USTGraphNode::CanUserDeleteNode() const
 {
 	return bIsReadOnly ? false : Super::CanUserDeleteNode();
 }
 
-void USkillGraphNode::DestroyNode()
+void USTGraphNode::DestroyNode()
 {
 	if (ParentNode)
 	{
@@ -228,7 +225,7 @@ void USkillGraphNode::DestroyNode()
 	UEdGraphNode::DestroyNode();
 }
 
-FText USkillGraphNode::GetTooltipText() const
+FText USTGraphNode::GetTooltipText() const
 {
 	FText TooltipDesc;
 	if (!NodeInstance)
@@ -264,21 +261,21 @@ FText USkillGraphNode::GetTooltipText() const
 	return TooltipDesc;
 }
 
-void USkillGraphNode::NodeConnectionListChanged()
+void USTGraphNode::NodeConnectionListChanged()
 {
 	Super::NodeConnectionListChanged();
-	GetSkillGraph()->UpdateAsset();
+	GetSTGraph()->UpdateAsset();
 }
 
-bool USkillGraphNode::CanCreateUnderSpecifiedSchema(const UEdGraphSchema * Schema) const
+bool USTGraphNode::CanCreateUnderSpecifiedSchema(const UEdGraphSchema * Schema) const
 {
 	return false;
 }
 
-void USkillGraphNode::FindDiffs(UEdGraphNode * OtherNode, FDiffResults & Results)
+void USTGraphNode::FindDiffs(UEdGraphNode * OtherNode, FDiffResults & Results)
 {
 	Super::FindDiffs(OtherNode, Results);
-	if (USkillGraphNode* OtherGraphNode = Cast<USkillGraphNode>(OtherNode))
+	if (USTGraphNode* OtherGraphNode = Cast<USTGraphNode>(OtherNode))
 	{
 		if (NodeInstance && OtherGraphNode->NodeInstance)
 		{
@@ -293,13 +290,13 @@ void USkillGraphNode::FindDiffs(UEdGraphNode * OtherNode, FDiffResults & Results
 	}
 }
 
-FString USkillGraphNode::GetPropertyNameAndValueForDiff(const UProperty * Prop, const uint8 * PropertyAddr) const
+FString USTGraphNode::GetPropertyNameAndValueForDiff(const UProperty * Prop, const uint8 * PropertyAddr) const
 {
 	return BlueprintNodeHelpers::DescribeProperty(Prop,PropertyAddr);
 }
 
 #if WITH_EDITOR
-void USkillGraphNode::PostEditImport()
+void USTGraphNode::PostEditImport()
 {
 	ResetNodeOwner();
 	if (NodeInstance)
@@ -308,7 +305,7 @@ void USkillGraphNode::PostEditImport()
 	}
 }
 
-void USkillGraphNode::PostEditUndo()
+void USTGraphNode::PostEditUndo()
 {
 	UEdGraphNode::PostEditUndo();
 	ResetNodeOwner();
@@ -319,7 +316,7 @@ void USkillGraphNode::PostEditUndo()
 }
 #endif
 
-UEdGraphPin * USkillGraphNode::GetInputPin(int32 InputIndex) const
+UEdGraphPin * USTGraphNode::GetInputPin(int32 InputIndex) const
 {
 	check(InputIndex >= 0);
 	for (int32 PinIndex = 0, FoundInputs = 0; PinIndex < Pins.Num(); PinIndex++)
@@ -339,7 +336,7 @@ UEdGraphPin * USkillGraphNode::GetInputPin(int32 InputIndex) const
 	return nullptr;
 }
 
-UEdGraphPin * USkillGraphNode::GetOutputPin(int32 InputIndex) const
+UEdGraphPin * USTGraphNode::GetOutputPin(int32 InputIndex) const
 {
 	check(InputIndex >= 0);
 	for (int32 PinIndex = 0, FoundInputs = 0; PinIndex < Pins.Num(); PinIndex++)
@@ -359,7 +356,7 @@ UEdGraphPin * USkillGraphNode::GetOutputPin(int32 InputIndex) const
 	return nullptr;
 }
 
-void USkillGraphNode::ResetNodeOwner()
+void USTGraphNode::ResetNodeOwner()
 {
 	if (NodeInstance)
 	{

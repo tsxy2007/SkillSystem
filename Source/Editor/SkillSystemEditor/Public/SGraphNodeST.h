@@ -15,7 +15,7 @@
 
 class SGraphPanel;
 class SToolTip;
-class USkillGraphNode;
+class USTGraphNode;
 
 class FDragSTGraphNode : public FDragNode
 {
@@ -25,7 +25,7 @@ public:
 	static TSharedRef<FDragSTGraphNode> New(const TSharedRef<SGraphPanel>& InGraphPanel, const TSharedRef<SGraphNode>& InDraggedNode);
 	static TSharedRef<FDragSTGraphNode> New(const TSharedRef<SGraphPanel>& InGraphPanel, const TArray<TSharedRef<SGraphNode>>& InDraggedNode);
 
-	USkillGraphNode* GetDropTargetNode()const;
+	USTGraphNode* GetDropTargetNode()const;
 	
 	double StartTime;
 
@@ -43,7 +43,7 @@ public:
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */
-	void Construct(const FArguments& InArgs,USkillGraphNode* InNode);
+	void Construct(const FArguments& InArgs,USTGraphNode* InNode);
 
 	// begin
 	virtual TSharedPtr<SToolTip> GetComplexTooltip() override;

@@ -5,7 +5,7 @@
 #include "SlateOptMacros.h"
 #include "Framework/Application/SlateApplication.h"
 #include "Editor.h"
-#include "SkillGraphNode.h"
+#include "STGraphNode.h"
 #include "SGraphPanel.h"
 #include "ScopedTransaction.h"
 #include "SkillEdGraph.h"
@@ -34,15 +34,15 @@ TSharedRef<FDragSTGraphNode> FDragSTGraphNode::New(const TSharedRef<SGraphPanel>
 	return Operation;
 }
 
-USkillGraphNode * FDragSTGraphNode::GetDropTargetNode() const
+USTGraphNode * FDragSTGraphNode::GetDropTargetNode() const
 {
-	return Cast<USkillGraphNode>(GetHoveredNode());
+	return Cast<USTGraphNode>(GetHoveredNode());
 }
 
 // SGraphNodeST begin----------------------------------------------------------------------------
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
-void SGraphNodeST::Construct(const FArguments& InArgs, USkillGraphNode* InNode)
+void SGraphNodeST::Construct(const FArguments& InArgs, USTGraphNode* InNode)
 {
 	SetCursor(EMouseCursor::CardinalCross);
 	GraphNode = InNode;
@@ -62,7 +62,7 @@ void SGraphNodeST::OnDragEnter(const FGeometry & MyGeometry, const FDragDropEven
 		TSharedPtr<SGraphNode> SubNode = GetSubNodeUnderCursor(MyGeometry, DragDropEvent);
 		DragConnectionOp->SetHoveredNode(SubNode.IsValid() ? SubNode : SharedThis(this));
 
-		USkillGraphNode* TestNode = Cast<USkillGraphNode>(GraphNode);
+		USTGraphNode* TestNode = Cast<USTGraphNode>(GraphNode);
 		if (DragConnectionOp->IsValidOperation() && TestNode&&TestNode->IsSubNode())
 		{
 			SetDragMarker(true);
@@ -100,7 +100,7 @@ FReply SGraphNodeST::OnDrop(const FGeometry& MyGeometry, const FDragDropEvent& D
 			return FReply::Handled();
 		}
 
-		USkillGraphNode* MyNode = Cast<USkillGraphNode>(GraphNode);
+		USTGraphNode* MyNode = Cast<USTGraphNode>(GraphNode);
 		if (MyNode == nullptr || MyNode->IsSubNode())
 		{
 			return FReply::Unhandled();
@@ -111,7 +111,7 @@ FReply SGraphNodeST::OnDrop(const FGeometry& MyGeometry, const FDragDropEvent& D
 		const TArray<TSharedRef<SGraphNode>>& DraggedNodes = DragNodeOp->GetNodes();
 		for (int32 Idx = 0; Idx < DraggedNodes.Num(); Idx++)
 		{
-			USkillGraphNode* DraggedNode = Cast<USkillGraphNode>(DraggedNodes[Idx]->GetNodeObj());
+			USTGraphNode* DraggedNode = Cast<USTGraphNode>(DraggedNodes[Idx]->GetNodeObj());
 			if (DraggedNode&& DraggedNode->ParentNode)
 			{
 				if (DraggedNode->ParentNode != GraphNode)
@@ -122,12 +122,12 @@ FReply SGraphNodeST::OnDrop(const FGeometry& MyGeometry, const FDragDropEvent& D
 			}
 		}
 
-		USkillGraphNode* DropTargetNode = DragNodeOp->GetDropTargetNode();
+		USTGraphNode* DropTargetNode = DragNodeOp->GetDropTargetNode();
 		const int32 InsertIndex = MyNode->FindSubNodeDropIndex(DropTargetNode);
 
 		for (int32 i = 0 ;i<DraggedNodes.Num();i++)
 		{
-			USkillGraphNode* DraggedTestNode = Cast<USkillGraphNode>(DraggedNodes[i]->GetNodeObj());
+			USTGraphNode* DraggedTestNode = Cast<USTGraphNode>(DraggedNodes[i]->GetNodeObj());
 			DraggedTestNode->Modify();
 			DraggedTestNode->ParentNode = MyNode;
 
@@ -140,7 +140,7 @@ FReply SGraphNodeST::OnDrop(const FGeometry& MyGeometry, const FDragDropEvent& D
 		}
 		else
 		{
-			USkillEdGraph* MyGraph = MyNode->GetSkillGraph();
+			USkillEdGraph* MyGraph = MyNode->GetSTGraph();
 			if (MyGraph)
 			{
 				MyGraph->OnSubNodeDropped();
@@ -165,7 +165,7 @@ FReply SGraphNodeST::OnMouseMove(const FGeometry & MyGeometry, const FPointerEve
 {
 	if (MouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton) && !(GEditor->bIsSimulatingInEditor || GEditor->PlayWorld))
 	{
-		USkillGraphNode* TestNode = Cast<USkillGraphNode>(GraphNode);
+		USTGraphNode* TestNode = Cast<USTGraphNode>(GraphNode);
 		if (TestNode && TestNode->IsSubNode())
 		{
 			const TSharedRef<SGraphPanel>& Panel = GetOwnerPanel().ToSharedRef();
@@ -234,7 +234,7 @@ FReply SGraphNodeST::OnMouseDown(const FGeometry & SenderGeometry, const FPointe
 {
 	if (MouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton) && !(GEditor->bIsSimulatingInEditor || GEditor->PlayWorld))
 	{
-		USkillGraphNode* TestNode = Cast<USkillGraphNode>(GraphNode);
+		USTGraphNode* TestNode = Cast<USTGraphNode>(GraphNode);
 		if (TestNode&&TestNode->IsSubNode())
 		{
 			const TSharedRef<SGraphPanel>& Panel = GetOwnerPanel().ToSharedRef();
@@ -294,7 +294,7 @@ void SGraphNodeST::SetDragMarker(bool bEnabled)
 
 FText SGraphNodeST::GetDescription() const
 {
-	USkillGraphNode* MyNode = CastChecked<USkillGraphNode>(GraphNode);
+	USTGraphNode* MyNode = CastChecked<USTGraphNode>(GraphNode);
 	return IsValid(MyNode) ? MyNode->GetDescription() : FText::GetEmpty();
 }
 

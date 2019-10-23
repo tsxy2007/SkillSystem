@@ -81,11 +81,11 @@ void USkillTreeGraphNode::InitializeInstance()
 	}
 }
 
-void USkillTreeGraphNode::OnSubNodeAdded(USkillGraphNode * SubNode)
+void USkillTreeGraphNode::OnSubNodeAdded(USTGraphNode * SubNode)
 {
 }
 
-void USkillTreeGraphNode::OnSubNodeRemoved(USkillGraphNode * SubNode)
+void USkillTreeGraphNode::OnSubNodeRemoved(USTGraphNode * SubNode)
 {
 }
 
@@ -93,12 +93,12 @@ void USkillTreeGraphNode::RemoveAllSubNodes()
 {
 }
 
-int32 USkillTreeGraphNode::FindSubNodeDropIndex(USkillGraphNode * SubNode) const
+int32 USkillTreeGraphNode::FindSubNodeDropIndex(USTGraphNode * SubNode) const
 {
 	return int32();
 }
 
-void USkillTreeGraphNode::InsertSubNodeAt(USkillGraphNode * SubNode, int32 DropIndex)
+void USkillTreeGraphNode::InsertSubNodeAt(USTGraphNode * SubNode, int32 DropIndex)
 {
 }
 

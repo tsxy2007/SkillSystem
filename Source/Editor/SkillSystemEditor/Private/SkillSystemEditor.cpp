@@ -5,7 +5,7 @@
 #include "SkillEditor.h"
 #include "PropertyEditorModule.h"
 #include "STNode.h"
-#include "SkillGraphNode.h"
+#include "STGraphNode.h"
 #include "PropertyEditorDelegates.h"
 #include "EdGraphUtilities.h"
 #include "SGraphNode_SkillTree.h"
@@ -23,7 +23,7 @@ class FGraphPanelNodeFactory_SKillTree : public FGraphPanelNodeFactory
 public:
 	virtual TSharedPtr<class SGraphNode> CreateNode(UEdGraphNode* Node) const override
 	{
-		if (USkillGraphNode* STNode = Cast<USkillGraphNode>(Node))
+		if (USTGraphNode* STNode = Cast<USTGraphNode>(Node))
 		{
 			return SNew(SGraphNode_SkillTree, STNode);
 		}

@@ -20,7 +20,7 @@
 #include "Widgets/Text/SInlineEditableTextBlock.h"
 #include "SLevelOfDetailBranchNode.h"
 #include "SkillTreeColors.h"
-#include "SkillGraphNode.h"
+#include "STGraphNode.h"
 #include "SkillGraphNode_Root.h"
 #include "SkillGraphNode_Service.h"
 #include "SkillGraphNode_Composite.h"
@@ -127,7 +127,7 @@ private:
 	FOnGetIndexColor OnGetIndexColorEvent;
 };
 
-void SGraphNode_SkillTree::Construct(const FArguments& InArgs,USkillGraphNode* InGraphNode)
+void SGraphNode_SkillTree::Construct(const FArguments& InArgs,USTGraphNode* InGraphNode)
 {
 	DebuggerStateDuration = 0.0f;
 	DebuggerStateCounter = INDEX_NONE;
@@ -156,7 +156,7 @@ void SGraphNode_SkillTree::UpdateGraphNode()
 	SubNodes.Reset();
 	OutputPins.Reset();
 
-	USkillGraphNode* STNode = Cast<USkillGraphNode>(GraphNode);
+	USTGraphNode* STNode = Cast<USTGraphNode>(GraphNode);
 	if (STNode)
 	{
 		
@@ -308,7 +308,7 @@ void SGraphNode_SkillTree::UpdateGraphNode()
 
 void SGraphNode_SkillTree::CreatePinWidgets()
 {
-	USkillGraphNode* StateNode = CastChecked<USkillGraphNode>(GraphNode);
+	USTGraphNode* StateNode = CastChecked<USTGraphNode>(GraphNode);
 	for (int32 PinIdx = 0;PinIdx < StateNode->Pins.Num();PinIdx++)
 	{
 		UEdGraphPin* MyPin = StateNode->Pins[PinIdx];
@@ -388,10 +388,10 @@ TSharedRef<SGraphNode> SGraphNode_SkillTree::GetNodeUnderMouse(const FGeometry &
 void SGraphNode_SkillTree::MoveTo(const FVector2D & NewPosition, FNodeSet & NodeFilter)
 {
 	SGraphNodeST::MoveTo(NewPosition, NodeFilter);
-	USkillGraphNode* STGraphNode = Cast<USkillGraphNode>(GraphNode);
+	USTGraphNode* STGraphNode = Cast<USTGraphNode>(GraphNode);
 	if (STGraphNode && !STGraphNode->IsSubNode())
 	{
-		USkillEdGraph* STGraph = STGraphNode->GetSkillGraph();
+		USkillEdGraph* STGraph = STGraphNode->GetSTGraph();
 		if (STGraph)
 		{
 			for (int32 i = 0; i < STGraphNode->Pins.Num(); i++)
@@ -436,8 +436,8 @@ EVisibility SGraphNode_SkillTree::GetDebuggerSearchFailedMarkerVisility() const
 
 FSlateColor SGraphNode_SkillTree::GetBorderBackgroundColor() const
 {
-	USkillGraphNode* STGraphNode = Cast<USkillGraphNode>(GraphNode);
-	USkillGraphNode* STParentNode = STGraphNode ? Cast<USkillGraphNode>(STGraphNode->ParentNode) : nullptr;
+	USTGraphNode* STGraphNode = Cast<USTGraphNode>(GraphNode);
+	USTGraphNode* STParentNode = STGraphNode ? Cast<USTGraphNode>(STGraphNode->ParentNode) : nullptr;
 	const bool bSelectSubNode = STParentNode && GetOwnerPanel()->SelectionManager.SelectedNodes.Contains(GraphNode);
 	USTNode* NodeInstance = STGraphNode ? Cast<USTNode>(STGraphNode->NodeInstance) : nullptr;
 	
@@ -455,7 +455,7 @@ FSlateColor SGraphNode_SkillTree::GetBorderBackgroundColor() const
 
 FSlateColor SGraphNode_SkillTree::GetBackgroundColor() const
 {
-	USkillGraphNode* STGraphNode = Cast<USkillGraphNode>(GraphNode);
+	USTGraphNode* STGraphNode = Cast<USTGraphNode>(GraphNode);
 	
 	FLinearColor NodeColor = SkillTreeColors::NodeBody::Default;
 	if (STGraphNode && STGraphNode->HasErrors())
@@ -483,8 +483,8 @@ FSlateColor SGraphNode_SkillTree::GetBackgroundColor() const
 
 const FSlateBrush * SGraphNode_SkillTree::GetNameIcon() const
 {
-	USkillGraphNode* STGraphNode = Cast<USkillGraphNode>(GraphNode);
-	return STGraphNode != nullptr ? FEditorStyle::GetBrush(STGraphNode->GetNameIcon()) : FEditorStyle::GetBrush(TEXT("BTEditor.Graph.BTNode.Icon"));
+	USTGraphNode* STGraphNode = Cast<USTGraphNode>(GraphNode);
+	return /*STGraphNode != nullptr ? FEditorStyle::GetBrush(STGraphNode->GetNameIcon()) : */FEditorStyle::GetBrush(TEXT("BTEditor.Graph.BTNode.Icon"));
 }
 
 EVisibility SGraphNode_SkillTree::GetBlueprintIconVisibility() const
@@ -499,7 +499,7 @@ EVisibility SGraphNode_SkillTree::GetIndexVisibility() const
 	{
 		return EVisibility::Collapsed;
 	}
-	USkillGraphNode* StateNode = CastChecked<USkillGraphNode>(GraphNode);
+	USTGraphNode* StateNode = CastChecked<USTGraphNode>(GraphNode);
 	UEdGraphPin* MyInputPin = StateNode->GetInputPin();
 	UEdGraphPin* MyParentOutputPin = nullptr;
 	if (MyInputPin != nullptr && MyInputPin->LinkedTo.Num() > 0)
@@ -516,7 +516,7 @@ EVisibility SGraphNode_SkillTree::GetIndexVisibility() const
 
 FText SGraphNode_SkillTree::GetIndexText() const
 {
-	USkillGraphNode* StateNode = CastChecked<USkillGraphNode>(GraphNode);
+	USTGraphNode* StateNode = CastChecked<USTGraphNode>(GraphNode);
 	UEdGraphPin* MyInputPin = StateNode->GetInputPin();
 	UEdGraphPin* MyParentOutputPin = nullptr;
 	if (MyInputPin != nullptr && MyInputPin->LinkedTo.Num() > 0)

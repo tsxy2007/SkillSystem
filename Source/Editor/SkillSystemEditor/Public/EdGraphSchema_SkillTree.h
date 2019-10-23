@@ -9,7 +9,7 @@
 
 class FSlateRect;
 class UEdGraph;
-class USkillGraphNode;
+class USTGraphNode;
 
 USTRUCT()
 struct SKILLSYSTEMEDITOR_API FSkillSchemaAction_NewNode : public FEdGraphSchemaAction
@@ -17,7 +17,7 @@ struct SKILLSYSTEMEDITOR_API FSkillSchemaAction_NewNode : public FEdGraphSchemaA
 	GENERATED_USTRUCT_BODY();
 public:
 	UPROPERTY()
-		USkillGraphNode* NodeTemplate;
+		USTGraphNode* NodeTemplate;
 
 	FSkillSchemaAction_NewNode()
 		:FEdGraphSchemaAction()
@@ -50,9 +50,9 @@ struct SKILLSYSTEMEDITOR_API FSkillSchemaAction_NewSubNode : public FEdGraphSche
 	GENERATED_USTRUCT_BODY();
 public:
 	UPROPERTY()
-		USkillGraphNode* NodeTemplate;
+		USTGraphNode* NodeTemplate;
 	UPROPERTY()
-		USkillGraphNode* ParentNode;
+		USTGraphNode* ParentNode;
 	FSkillSchemaAction_NewSubNode()
 		:FEdGraphSchemaAction()
 		,NodeTemplate(nullptr)

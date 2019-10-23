@@ -484,7 +484,7 @@ TSharedRef<SWidget> FSkillEditor::HandleCreateNewTaskMenu() const
 {
 	FClassViewerInitializationOptions Options;
 	Options.bShowUnloadedBlueprints = true;
-	Options.ClassFilter = MakeShareable(new FNewNodeClassFilter<USkillGraphNode>());
+	Options.ClassFilter = MakeShareable(new FNewNodeClassFilter<USTGraphNode>());
 
 	FOnClassPicked OnPicked(FOnClassPicked::CreateSP(this, &FSkillEditor::HandleNewNodeClassPicked));
 

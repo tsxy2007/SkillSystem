@@ -125,6 +125,16 @@ void UEdGraphSchema_SkillTree::GetContextMenuActions(const UEdGraph* CurrentGrap
 
 }
 
+const FPinConnectionResponse UEdGraphSchema_SkillTree::CanCreateConnection(const UEdGraphPin * A, const UEdGraphPin * B) const
+{
+	if (A->GetOwningNode() == B->GetOwningNode())
+	{
+		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, LOCTEXT("PinErrorSameNode", "Both are on the same node"));
+	}
+	
+	return FPinConnectionResponse(CONNECT_RESPONSE_MAKE,LOCTEXT("PinConnect","Connect nodes"));
+}
+
 FLinearColor UEdGraphSchema_SkillTree::GetPinTypeColor(const FEdGraphPinType& PinType) const
 {
 	return FLinearColor::White;

@@ -10,6 +10,7 @@
 #include "STNode.h"
 #include "SkillGraphNode_Composite.h"
 #include "SkillGraphNode_Root.h"
+#include "SkillTreeConnectionDrawingPolicy.h"
 
 #define LOCTEXT_NAMESPACE "SkillGraph"
 #define SNAP_GRID (16)
@@ -148,7 +149,7 @@ bool UEdGraphSchema_SkillTree::ShouldHidePinDefaultValue(UEdGraphPin* Pin) const
 
 class FConnectionDrawingPolicy* UEdGraphSchema_SkillTree::CreateConnectionDrawingPolicy(int32 InBackLayerID, int32 InFrontLayerID, float InZoomFactor, const FSlateRect& InClippingRect, class FSlateWindowElementList& InDrawElements, class UEdGraph* InGraphObj) const
 {
-	return nullptr;
+	return new FSkillTreeConnectionDrawingPolicy(InBackLayerID,InFrontLayerID,InZoomFactor,InClippingRect,InDrawElements,InGraphObj);
 }
 
 void UEdGraphSchema_SkillTree::BreakNodeLinks(UEdGraphNode& TargetNode) const

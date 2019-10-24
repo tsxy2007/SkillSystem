@@ -110,7 +110,40 @@ UEdGraphSchema_SkillTree::UEdGraphSchema_SkillTree(const FObjectInitializer& Obj
 
 void UEdGraphSchema_SkillTree::GetBreakLinkToSubMenuActions(class FMenuBuilder& MenuBuilder, class UEdGraphPin* InGraphPin)
 {
+	TMap<FString, uint32> LinkTitleCount;
+	for (TArray<class UEdGraphPin*>::TConstIterator Links(InGraphPin->LinkedTo);Links;++Links)
+	{
+		UEdGraphPin* Pin = *Links;
+		FString TitleString = Pin->GetOwningNode()->GetNodeTitle(ENodeTitleType::ListView).ToString();
+		FText Title = FText::FromString(TitleString);
+		if (Pin->PinName != TEXT(""))
+		{
+			TitleString = FString::Printf(TEXT("%s(%s)"), *TitleString, *Pin->PinName.ToString());
 
+			// add name of connection if possible
+			FFormatNamedArguments Args;
+			Args.Add(TEXT("NodeTitle"), Title);
+			Args.Add(TEXT("PinName"), Pin->GetDisplayName());
+			Title = FText::Format(LOCTEXT("BreakDescPin", "{NodeTitle}({PinName})"), Args);
+		}
+		uint32& Count = LinkTitleCount.FindOrAdd(TitleString);
+		FText Description;
+		FFormatNamedArguments Args;
+		Args.Add(TEXT("NodeTitle"), Title);
+		Args.Add(TEXT("NumberOfNodes"), Count);
+
+		if (Count == 0)
+		{
+			Description = FText::Format(LOCTEXT("BreakDesc", "Break link to {NodeTitle}"), Args);
+		}
+		else
+		{
+			Description = FText::Format(LOCTEXT("BreakDesc","Break link to {NodeTitle}({NumberOfNodes})"),Args);
+		}
+		++Count;
+		MenuBuilder.AddMenuEntry(Description, Description, FSlateIcon(), FUIAction(
+			FExecuteAction::CreateUObject(this, &UEdGraphSchema_SkillTree::BreakSinglePinLink, const_cast<UEdGraphPin*>(InGraphPin), *Links)));
+	}
 }
 
 void UEdGraphSchema_SkillTree::CreateDefaultNodesForGraph(UEdGraph& Graph) const
@@ -123,7 +156,7 @@ void UEdGraphSchema_SkillTree::CreateDefaultNodesForGraph(UEdGraph& Graph) const
 
 void UEdGraphSchema_SkillTree::GetContextMenuActions(const UEdGraph* CurrentGraph, const UEdGraphNode* InGraphNode, const UEdGraphPin* InGraphPin, class FMenuBuilder* MenuBuilder, bool bIsDebugging) const
 {
-
+	Super::GetContextMenuActions(CurrentGraph, InGraphNode, InGraphPin, MenuBuilder, bIsDebugging);
 }
 
 const FPinConnectionResponse UEdGraphSchema_SkillTree::CanCreateConnection(const UEdGraphPin * A, const UEdGraphPin * B) const
@@ -154,17 +187,20 @@ class FConnectionDrawingPolicy* UEdGraphSchema_SkillTree::CreateConnectionDrawin
 
 void UEdGraphSchema_SkillTree::BreakNodeLinks(UEdGraphNode& TargetNode) const
 {
-
+	const FScopedTransaction Transaction(NSLOCTEXT("UnrealEd", "GraphEd_BreakNodeLinks", "Break Node Link"));
+	Super::BreakNodeLinks(TargetNode);
 }
 
 void UEdGraphSchema_SkillTree::BreakPinLinks(UEdGraphPin& TargetPin, bool bSendsNodeNotification) const
 {
-
+	const FScopedTransaction Transaction(NSLOCTEXT("UnrealEd", "GraphEd_BreakPinLinks", "Break Pin Links"));
+	Super::BreakPinLinks(TargetPin, bSendsNodeNotification);
 }
 
 void UEdGraphSchema_SkillTree::BreakSinglePinLink(UEdGraphPin* SourcePin, UEdGraphPin* TargetPin) const
 {
-
+	const FScopedTransaction Transaction(NSLOCTEXT("UnrealEd", "GraphEd_BreakPinLinks", "Break Pin Links"));
+	Super::BreakSinglePinLink(SourcePin, TargetPin);
 }
 
 void UEdGraphSchema_SkillTree::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const

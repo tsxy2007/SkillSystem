@@ -4,102 +4,60 @@
 
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
-#include "EdGraph/EdGraphSchema.h"
+#include "STGraphSchema.h"
 #include "EdGraphSchema_SkillTree.generated.h"
 
 class FSlateRect;
 class UEdGraph;
-class USTGraphNode;
 
 USTRUCT()
-struct SKILLSYSTEMEDITOR_API FSkillSchemaAction_NewNode : public FEdGraphSchemaAction
+struct FSkillTreeSchemaAction_AutoArrange : public FEdGraphSchemaAction
 {
 	GENERATED_USTRUCT_BODY();
 public:
-	UPROPERTY()
-		USTGraphNode* NodeTemplate;
-
-	FSkillSchemaAction_NewNode()
+	FSkillTreeSchemaAction_AutoArrange()
 		:FEdGraphSchemaAction()
-		, NodeTemplate(nullptr)
 	{
 
 	}
-
-	FSkillSchemaAction_NewNode(FText InNodeCategory,FText InMenuDesc,FText InToolTip,const int32 InGrouping)
+	FSkillTreeSchemaAction_AutoArrange(FText InNodeCategory,FText InMenuDesc,FText InToolTip,const int32 InGrouping)
 		:FEdGraphSchemaAction(MoveTemp(InNodeCategory),MoveTemp(InMenuDesc),MoveTemp(InToolTip),InGrouping)
-		,NodeTemplate(nullptr)
 	{}
-
+	
+	// ~ Begin FEdgraphSchemaAction Interface
 	virtual UEdGraphNode* PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode = true) override;
-	virtual UEdGraphNode* PerformAction(class UEdGraph* ParentGraph, TArray<UEdGraphPin*>& FromPin, const FVector2D Location, bool bSelectNewNode = true) override;
-	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
-
-	template<typename NodeType>
-	static NodeType* SpawnNodeFromTemplate(class UEdGraph* ParentGraph, NodeType* InTemplateNode, const FVector2D Location)
-	{
-		FSkillSchemaAction_NewNode Action;
-		Action.NodeTemplate = InTemplateNode;
-		return Cast<NodeType>(Action.PerformAction(ParentGraph, nullptr, Location));
-	}
+	// ~ End FEdGraphSchemaAction Interface
 };
 
+
 USTRUCT()
-struct SKILLSYSTEMEDITOR_API FSkillSchemaAction_NewSubNode : public FEdGraphSchemaAction
+struct FSkillTreeSchemaAction_AddComment : public FEdGraphSchemaAction
 {
-	GENERATED_USTRUCT_BODY();
+	GENERATED_BODY()
 public:
-	UPROPERTY()
-		USTGraphNode* NodeTemplate;
-	UPROPERTY()
-		USTGraphNode* ParentNode;
-	FSkillSchemaAction_NewSubNode()
-		:FEdGraphSchemaAction()
-		,NodeTemplate(nullptr)
-		,ParentNode(nullptr)
+	FSkillTreeSchemaAction_AddComment():FEdGraphSchemaAction(){}
+	FSkillTreeSchemaAction_AddComment(FText InDescription,FText InToolTip)
+		: FEdGraphSchemaAction(FText(),MoveTemp(InDescription),MoveTemp(InToolTip),0)
 	{}
-	FSkillSchemaAction_NewSubNode(FText InNodeCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping)
-		:FEdGraphSchemaAction(MoveTemp(InNodeCategory), MoveTemp(InMenuDesc), MoveTemp(InToolTip), InGrouping)
-		, NodeTemplate(nullptr)
-		, ParentNode(nullptr)
-	{
-	}
-	virtual UEdGraphNode* PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode = true);
-	virtual UEdGraphNode* PerformAction(class UEdGraph* ParentGraph, TArray<UEdGraphPin *>& FromPins, const FVector2D Location, bool bSelectNewNode = true);
-	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+	// ~ Begin FEdgraphSchemaAction Interface
+	virtual UEdGraphNode* PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode = true) override;
+	// ~ End FEdGraphSchemaAction Interface
 };
 
 /**
  * 
  */
 UCLASS()
-class SKILLSYSTEMEDITOR_API UEdGraphSchema_SkillTree : public UEdGraphSchema
+class SKILLSYSTEMEDITOR_API UEdGraphSchema_SkillTree : public USTGraphSchema
 {
 	GENERATED_UCLASS_BODY()
 public:
-	void GetBreakLinkToSubMenuActions(class FMenuBuilder& MenuBuilder, class UEdGraphPin* InGraphPin);
-
-	//~ Begin EdGraphSchema Interface
-	virtual void CreateDefaultNodesForGraph(UEdGraph& Graph) const override;
-	virtual void GetContextMenuActions(const UEdGraph* CurrentGraph, const UEdGraphNode* InGraphNode, const UEdGraphPin* InGraphPin, class FMenuBuilder* MenuBuilder, bool bIsDebugging) const override;
-	
-	virtual const FPinConnectionResponse CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const override;
-
-	virtual FLinearColor GetPinTypeColor(const FEdGraphPinType& PinType) const override;
-	virtual bool ShouldHidePinDefaultValue(UEdGraphPin* Pin) const override;
-	virtual class FConnectionDrawingPolicy* CreateConnectionDrawingPolicy(int32 InBackLayerID, int32 InFrontLayerID, float InZoomFactor, const FSlateRect& InClippingRect, class FSlateWindowElementList& InDrawElements, class UEdGraph* InGraphObj) const override;
-	virtual void BreakNodeLinks(UEdGraphNode& TargetNode) const override;
-	virtual void BreakPinLinks(UEdGraphPin& TargetPin, bool bSendsNodeNotification) const override;
-	virtual void BreakSinglePinLink(UEdGraphPin* SourcePin, UEdGraphPin* TargetPin) const override;
-
-	virtual void GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const override;
+	//~ Begin EdgraphSchema Interface
+	//virtual void CreateDefaultNodesForGraph(UEdGraph& Graph) const override;
+	//virtual void GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const override;
+	//virtual void GetContextMenuActions(const UEdGraph* CurrentGraph, const UEdGraphNode* InGraphNode, const UEdGraphPin* InGraphPin, class FMenuBuilder* MenuBuilder, bool bIsDebugging) const override;
+	//virtual const FPinConnectionResponse CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const override;
+	//virtual const FPinConnectionResponse CanMergeNodes(const UEdGraphNode* A, const UEdGraphNode* B) const override;
+	//virtual FLinearColor GetPinTypeColor(const FEdGraphPinType& PinType) const override;
 	//~ End EdGraphSchema Interface
-
-
-	//virtual void GetGraphNodeContextActions(FGraphContextMenuBuilder& ContextMenuBuilder, int32 SubNodeFlags) const;
-	//virtual void GetSubNodeClasses(int32 SubNodeFlags, TArray<FGraphNodeClassData>& ClassData, UClass*& GraphNodeClass) const;
-
-protected:
-	static TSharedPtr<FSkillSchemaAction_NewNode> AddNewNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip);
-	static TSharedPtr<FSkillSchemaAction_NewSubNode> AddNewSubNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip);
 };

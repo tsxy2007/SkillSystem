@@ -246,6 +246,11 @@ void USkillEdGraph::Serialize(FArchive& Ar)
 	}
 }
 
+void USkillEdGraph::AutoArrange()
+{
+
+}
+
 void USkillEdGraph::CollectAllNodeInstance(TSet<UObject*>& NodeInstances)
 {
 

@@ -53,6 +53,9 @@ public:
 	void RebuildChildOrder(UEdGraphNode* ParentNode);
 
 	virtual void Serialize(FArchive& Ar) override;
+
+
+	void AutoArrange();
 protected:
 	uint32 bLockUpdates : 1;
 	virtual void CollectAllNodeInstance(TSet<UObject*>& NodeInstances);

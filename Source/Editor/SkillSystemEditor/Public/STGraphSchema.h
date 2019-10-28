@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "EdGraph/EdGraphSchema.h"
 #include "STGraphNode.h"
+#include "SkillGraphTypes.h"
 #include "STGraphSchema.generated.h"
 
 
@@ -74,6 +75,9 @@ class SKILLSYSTEMEDITOR_API USTGraphSchema : public UEdGraphSchema
 {
 	GENERATED_UCLASS_BODY()
 public:
+
+	void GetBreakLinkToSubMenuActions(class FMenuBuilder& MenuBuilder, class UEdGraphPin* InGraphPin);
+
 	//~ Begin EgGraphSchema Interface
 	virtual void GetContextMenuActions(const UEdGraph* CurrentGraph, const UEdGraphNode* InGraphNode, const UEdGraphPin* InGraphPin, class FMenuBuilder* MenuBuilder, bool bIsDebugging) const override;
 	virtual FLinearColor GetPinTypeColor(const FEdGraphPinType& PinType) const override;
@@ -84,8 +88,8 @@ public:
 	virtual void BreakSinglePinLink(UEdGraphPin* SourcePin, UEdGraphPin* TargetPin) const override;
 	//~ End EdGraphSchema Interface
 
-	/*virtual void GetGraphNodeContextActions(FGraphContextMenuBuilder& ContextMenuBuilder, int32 SubNodeFlags) const;
-	virtual void GetSubNodeClasses(int32 SubNodeFlags, TArray<FGraphNodeClassData>& ClassData, UClass*& GraphNodeClass) const;*/
+	virtual void GetGraphNodeContextActions(FGraphContextMenuBuilder& ContextMenuBuilder, int32 SubNodeFlags) const;
+	virtual void GetSubNodeClasses(int32 SubNodeFlags, TArray<FSkillGraphNodeClassData>& ClassData, UClass*& GraphNodeClass) const;
 protected:
 	static TSharedPtr<FSTSchemaAction_NewNode> AddNewNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip);
 	static TSharedPtr<FSTSchemaAction_NewSubNode> AddNewSubNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip);

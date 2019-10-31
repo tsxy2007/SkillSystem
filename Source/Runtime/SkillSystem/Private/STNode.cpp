@@ -32,6 +32,21 @@ void USTNode::InitializeFromAsset(USkill& Asset)
 
 }
 
+void USTNode::InitializeMemory(USkillTreeComponent& OwnerComp, uint8* NodeMemory, ESTMemoryInit::Type InitType) const
+{
+
+}
+
+void USTNode::CleanupMemory(USkillTreeComponent& OwnerComp, uint8* NodeMemory, ESTMemoryClear::Type CleanupType) const
+{
+
+}
+
+void USTNode::OnInstanceCreated(USkillTreeComponent& OwnerComp)
+{
+
+}
+
 UGameplayTasksComponent * USTNode::GetGameplayTasksComponent(const UGameplayTask & Task) const
 {
 	return nullptr;

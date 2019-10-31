@@ -36,15 +36,14 @@ public:
 	// initialize any asset related data
 	virtual void InitializeFromAsset(USkill& Asset);
 
-	//// initialize memory block
-	//virtual void InitializeMemory(USkillTreeComponent& OwnerComp, uint8* NodeMemory, ESTMemoryInit::Type InitType)const;
+	// initialize memory block
+	virtual void InitializeMemory(USkillTreeComponent& OwnerComp, uint8* NodeMemory, ESTMemoryInit::Type InitType)const;
 
-	//// cleanup memory block
-	//virtual void CleanupMemory(USkillTreeComponent& OwnerComp, uint8* NodeMemory, ESTMemoryClear::Type CleanupType) const;
+	// cleanup memory block
+	virtual void CleanupMemory(USkillTreeComponent& OwnerComp, uint8* NodeMemory, ESTMemoryClear::Type CleanupType) const;
 
-
-	//// called when node instance is added to tree
-	//virtual void OnInstanceCreated(USkillTreeComponent& OwnerComp);
+	// called when node instance is added to tree
+	virtual void OnInstanceCreated(USkillTreeComponent& OwnerComp);
 
 
 	//~Begin GamePlayTaskOwnerInterface
@@ -76,6 +75,10 @@ public:
 	void ForceInstancing(bool bEnable);
 	bool HasInstance()const;
 	bool IsInstanced()const;
+
+
+	UPROPERTY(Category = Description, EditAnywhere)
+	FString NodeName;
 private:
 	UPROPERTY()
 		USkill* TreeAsset;

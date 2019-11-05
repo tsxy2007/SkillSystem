@@ -33,6 +33,29 @@ namespace
 	static const bool bShowExecutionIndexInEditorMode = true;
 }
 
+static USkillTreeGraphNode* GetParentNode(UEdGraphNode* GraphNode)
+{
+	USkillTreeGraphNode* STGraphNode = Cast<USkillTreeGraphNode>(GraphNode);
+	if (STGraphNode->ParentNode != nullptr)
+	{
+		STGraphNode = Cast<USkillTreeGraphNode>(STGraphNode->ParentNode);
+	}
+	UEdGraphPin* MyInputPin = STGraphNode->GetInputPin();
+	UEdGraphPin* MyParentOutputPin = nullptr;
+	if (MyInputPin != nullptr && MyInputPin->LinkedTo.Num() > 0)
+	{
+		MyParentOutputPin = MyInputPin->LinkedTo[0];
+		if (MyParentOutputPin != nullptr)
+		{
+			if (MyParentOutputPin->GetOwningNode() != nullptr)
+			{
+				return CastChecked<USkillTreeGraphNode>(MyParentOutputPin->GetOwningNode());
+			}
+		}
+	}
+	return nullptr;
+}
+
 class SSkillTreePin : public SGraphPinST
 {
 	SLATE_BEGIN_ARGS(SSkillTreePin) {}
@@ -562,7 +585,12 @@ FText SGraphNode_SkillTree::GetIndexTooltipText() const
 
 FSlateColor SGraphNode_SkillTree::GetIndexColor(bool bHovered) const
 {
-	return FSlateColor();
+	USkillTreeGraphNode* ParentNode = GetParentNode(GraphNode);
+	const bool bHighlightHover = bHovered || (ParentNode && ParentNode->bHighlightChildNodeIndices);
+	static const FName HoveredColor("BTEditor.Graph.BTNode.Index.HoveredColor");
+	static const FName DefaultColor("BTEditor.Graph.BTNode.Index.Color");
+
+	return bHighlightHover ? FEditorStyle::Get().GetSlateColor(HoveredColor) : FEditorStyle::Get().GetSlateColor(DefaultColor);
 }
 
 void SGraphNode_SkillTree::OnIndexHoverStateChanged(bool bHovered)

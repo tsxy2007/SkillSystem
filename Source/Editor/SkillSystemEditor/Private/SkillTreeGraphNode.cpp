@@ -126,7 +126,9 @@ void USkillTreeGraphNode::ClearDebuggerState()
 
 FName USkillTreeGraphNode::GetNameIcon() const
 {
-	return FName();
+	USTNode* BTNodeInstance = Cast<USTNode>(NodeInstance);
+	return BTNodeInstance != nullptr ? BTNodeInstance->GetNodeIconName() : FName("BTEditor.Graph.BTNode.Icon");
+
 }
 
 void USkillTreeGraphNode::CreateAddDecoratorSubMenu(FMenuBuilder & MenuBuilder, UEdGraph * Graph) const

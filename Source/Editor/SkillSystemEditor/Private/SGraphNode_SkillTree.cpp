@@ -395,11 +395,44 @@ void SGraphNode_SkillTree::AddPin(const TSharedRef<SGraphPin>& PinToAdd)
 
 TSharedPtr<SToolTip> SGraphNode_SkillTree::GetComplexTooltip()
 {
-	return TSharedPtr<SToolTip>();
+	return IDocumentation::Get()->CreateToolTip(TAttribute<FText>(this,&SGraphNode::GetNodeTooltip),nullptr,GraphNode->GetDocumentationLink(),GraphNode->GetDocumentationExcerptName());
 }
 
 void SGraphNode_SkillTree::GetOverlayBrushes(bool bSelected, const FVector2D WidgetSize, TArray<FOverlayBrushInfo>& Brushes) const
 {
+	USkillTreeGraphNode* STNode = Cast<USkillTreeGraphNode>(GraphNode);
+	if (STNode == nullptr)
+	{
+		return;
+	}
+	//TODO: Debug
+}
+
+TArray<FOverlayWidgetInfo> SGraphNode_SkillTree::GetOverlayWidgets(bool bSelected, const FVector2D& WidgetSize) const
+{
+	TArray<FOverlayWidgetInfo> Widgets;
+	check(NodeBody.IsValid());
+	check(IndexOverlay.IsValid());
+
+	FVector2D Origin(0.f, 0.f);
+
+	//build overlay for service sub-nodes
+
+	FOverlayWidgetInfo Overlay(IndexOverlay);
+	Overlay.OverlayOffset = FVector2D(WidgetSize.X - (IndexOverlay->GetDesiredSize().X*0.5f), Origin.Y);
+	Widgets.Add(Overlay);
+	Origin.Y += NodeBody->GetDesiredSize().Y;
+	for (const auto& ServiceWidget : ServicesWidgets)
+	{
+		TArray<FOverlayWidgetInfo> OverlayWidgets = ServiceWidget->GetOverlayWidgets(bSelected, WidgetSize);
+		for (auto& OverlayWidget : OverlayWidgets)
+		{
+			OverlayWidget.OverlayOffset.Y += Origin.Y;
+		}
+		Widgets.Append(OverlayWidgets);
+		Origin.Y += ServiceWidget->GetDesiredSize().Y;
+	}
+	return Widgets;
 }
 
 TSharedRef<SGraphNode> SGraphNode_SkillTree::GetNodeUnderMouse(const FGeometry & MyGeometry, const FPointerEvent & MouseEvent)

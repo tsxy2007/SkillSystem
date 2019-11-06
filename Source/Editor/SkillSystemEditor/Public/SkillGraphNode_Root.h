@@ -16,10 +16,23 @@ class SKILLSYSTEMEDITOR_API USkillGraphNode_Root : public USkillTreeGraphNode
 	GENERATED_UCLASS_BODY()
 public:
 	//~ Begin UEdGraphNode Interface
+
+	virtual void PostPlacedNewNode() override;
 	virtual void AllocateDefaultPins() override;
+	virtual bool CanDuplicateNode() const override { return false; }
+	virtual bool CanUserDeleteNode() const override { return false; }
+	virtual bool HasErrors()const override { return false; }
+	virtual bool RefreshNodeClass() override { return false; }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const  override;
+
+	// Get Icon resource name for title bar
+	virtual FName GetNameIcon() const override;
 	virtual FText GetTooltipText() const override;
-	virtual FLinearColor GetNodeTitleColor() const override;
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
-	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
-	//~ End UEdGraphNode Interface
+
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	virtual void PostEditUndo() override;
+
+	virtual FText GetDescription() const override;
+
+	// notify skill tree about 
 };

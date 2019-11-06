@@ -115,4 +115,5 @@ public:
 	//static FString DescribeNodeResult(ESTNodeResult::Type NodeResult);
 	//static FString DescribeActiveNode(ESTFlowAbortMode::Type FlowAbortMode);
 
+	static FString GetShortTypeName(const UObject* Ob);
 };

@@ -75,11 +75,15 @@ public:
 
 	int32 GetChildIndex(const USTNode& ChildNode) const;
 
-
+	bool IsApplyingDecoratorScope()const;
 
 #if WITH_EDITOR
 	virtual bool CanAbortLowerPriority() const;
 	virtual bool CanAbortSelf()const;
 #endif
+
+protected:
+	UPROPERTY(EditAnywhere, Category = Composite)
+		uint32 bApplyDecoratorScope : 1;
 };
 

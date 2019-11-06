@@ -14,4 +14,14 @@ class SKILLSYSTEMEDITOR_API USkillGraphNode_Composite : public USkillTreeGraphNo
 {
 	GENERATED_UCLASS_BODY()
 	
+public:
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType)const override;
+	virtual FText GetDescription() const override;
+	virtual FText GetTooltipText() const override;
+	virtual bool RefreshNodeClass() override { return false; }
+
+	virtual void GetContextMenuActions(const FGraphNodeContextMenuBuilder& Context) const override;
+
+	virtual bool CanPlaceBreakpoints() const override { return true; }
 };

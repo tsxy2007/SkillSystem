@@ -12,34 +12,53 @@
 USkillGraphNode_Root::USkillGraphNode_Root(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
+	bIsReadOnly = true;
+}
 
+void USkillGraphNode_Root::PostPlacedNewNode()
+{
+	Super::PostPlacedNewNode();
 }
 
 void USkillGraphNode_Root::AllocateDefaultPins()
 {
-	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Execute);
-	Super::AllocateDefaultPins();
-}
-
-FText USkillGraphNode_Root::GetTooltipText() const
-{
-	return NSLOCTEXT("STNode", "ExecutePinInOrder_Tooltip", "Executes a series of pins in order");
-}
-
-FLinearColor USkillGraphNode_Root::GetNodeTitleColor() const
-{
-	return FLinearColor::White;
+	CreatePin(EGPD_Output, USkillTreeEditorTypes::PinCategory_SingleComposite, TEXT("In"));
 }
 
 FText USkillGraphNode_Root::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return NSLOCTEXT("STNode", "Root", "Root");
+	return NSLOCTEXT("SkillTreeEditor", "Root", "ROOT");
 }
 
-FSlateIcon USkillGraphNode_Root::GetIconAndTint(FLinearColor& OutColor) const
+FName USkillGraphNode_Root::GetNameIcon() const
 {
-	static FSlateIcon Icon("EditorStyle", "GraphEditor.Sequence_16x");
-	return Icon;
+	return FName("BTEditor.Graph.BTNode.Root.Icon");
+}
+
+FText USkillGraphNode_Root::GetTooltipText() const
+{
+	return UEdGraphNode::GetTooltipText();
+}
+
+void USkillGraphNode_Root::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+	//TODO:
+	/*if (PropertyChangedEvent.Property &&
+		PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(USkillGraphNode_Root, BlackboardAsset))
+	{
+	}*/
+}
+
+void USkillGraphNode_Root::PostEditUndo()
+{
+	Super::PostEditUndo();
+	//TODO:
+}
+
+FText USkillGraphNode_Root::GetDescription() const
+{
+	return FText::FromString(GetNameSafe(this));
 }
 
 #undef LOCTEXT_NAMESPACE

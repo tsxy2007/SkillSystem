@@ -56,6 +56,7 @@ public:
 	virtual void OnGameplayTaskDeactivated(UGameplayTask& Task) override;
 	//~End GamePlayTaskOwnerInterface
 
+	
 
 	USkill* GetTreeAsset() const;
 
@@ -66,6 +67,8 @@ public:
 
 #if WITH_EDITOR
 	virtual FName GetNodeIconName()const;
+	virtual void OnNodeCreated() {}
+	FString GetNodeName() const;
 #endif
 	uint16 GetExecutionIndex()const;
 	uint16 GetMemoryOffset()const;

@@ -6,7 +6,7 @@
 USTCompositeNode::USTCompositeNode(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
-
+	bApplyDecoratorScope = true;
 }
 
 USTCompositeNode::~USTCompositeNode()
@@ -22,6 +22,11 @@ void USTCompositeNode::InitializeComposite(uint16 InLastExecuionIndex)
 int32 USTCompositeNode::GetChildIndex(const USTNode& ChildNode) const
 {
 	return 0;
+}
+
+bool USTCompositeNode::IsApplyingDecoratorScope() const
+{
+	return bApplyDecoratorScope;
 }
 
 bool USTCompositeNode::CanAbortLowerPriority() const

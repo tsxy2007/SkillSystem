@@ -41,4 +41,5 @@ public:
 	static const FName PinCategory_SingleComposite;
 	static const FName PinCategory_SingleTask;
 	static const FName PinCategory_SingleNode;
+
 };

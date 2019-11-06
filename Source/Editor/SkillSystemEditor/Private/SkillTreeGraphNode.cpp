@@ -77,29 +77,47 @@ void USkillTreeGraphNode::InitializeInstance()
 	USkill* STAsset = STNode ? Cast<USkill>(STNode->GetOuter()) : nullptr;
 	if (STNode && STAsset)
 	{
-		
+		STNode->InitializeFromAsset(*STAsset);
+		STNode->InitializeNode(NULL, MAX_uint16, 0, 0);
+		STNode->OnNodeCreated();
 	}
 }
 
 void USkillTreeGraphNode::OnSubNodeAdded(USTGraphNode * SubNode)
 {
+	//TODO:
 }
 
 void USkillTreeGraphNode::OnSubNodeRemoved(USTGraphNode * SubNode)
 {
+	// TODO:
 }
 
 void USkillTreeGraphNode::RemoveAllSubNodes()
 {
+	Super::RemoveAllSubNodes();
 }
 
 int32 USkillTreeGraphNode::FindSubNodeDropIndex(USTGraphNode * SubNode) const
 {
-	return int32();
+	const int32 SubIdx = SubNodes.IndexOfByKey(SubNode) + 1;
+	//TODO:
+	const int32 CombinedIdx = (SubIdx & 0xff);
+	return CombinedIdx;
 }
 
 void USkillTreeGraphNode::InsertSubNodeAt(USTGraphNode * SubNode, int32 DropIndex)
 {
+	const int32 SubIdx = (DropIndex & 0xff) - 1;
+	if (SubIdx >= 0)
+	{
+		SubNodes.Insert(SubNode, SubIdx);
+	}
+	else
+	{
+		SubNodes.Add(SubNode);
+	}
+
 }
 
 void USkillTreeGraphNode::ClearDebuggerState()

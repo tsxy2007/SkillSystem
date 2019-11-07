@@ -6,6 +6,7 @@
 #include "SkillSystemEditor.h"
 #include "SkillTreeEditorTypes.h"
 #include "STNode.h"
+#include "Skill.h"
 
 USkillEdGraph::USkillEdGraph(const FObjectInitializer& Objectinitlializer)
 	:Super(Objectinitlializer)
@@ -16,6 +17,7 @@ USkillEdGraph::USkillEdGraph(const FObjectInitializer& Objectinitlializer)
 void USkillEdGraph::OnCreated()
 {
 	MarkVersion();
+	
 }
 
 void USkillEdGraph::OnLoaded()
@@ -99,7 +101,30 @@ void USkillEdGraph::MarkVersion()
 
 void USkillEdGraph::CreateSTFromGraph(class USkillTreeGraphNode* RootEdNode)
 {
+	USkill* STAsset = Cast<USkill>(GetOuter());
+	STAsset->RootNode = nullptr;
 
+	uint16 ExecutionIndex = 0;
+	uint8 TreeDepth = 0;
+	STAsset->RootNode = Cast<USTCompositeNode>(RootEdNode->NodeInstance);
+	if (STAsset->RootNode)
+	{
+		STAsset->RootNode->InitializeNode(nullptr, ExecutionIndex, 0, TreeDepth);
+		ExecutionIndex++;
+	}
+
+	
+
+	// connect tree nodes;
+	
+
+	RootEdNode->bRootLevel = true;
+	
+	if (STAsset->RootNode)
+	{
+		STAsset->RootNode->InitializeComposite(ExecutionIndex - 1);
+	}
+	RemoveOrphanedNodes();
 }
 
 void USkillEdGraph::OnSubNodeDropped()

@@ -24,7 +24,10 @@ UWorld* USTNode::GetWorld() const
 
 void USTNode::InitializeNode(USTCompositeNode* InParentNode, uint16 InExecutionIndex, uint16 InMemoryOffset, uint8 InTreeDepth)
 {
-
+	ParentNode = InParentNode;
+	ExecutionIndex = InExecutionIndex;
+	MemoryOffset = InMemoryOffset;
+	TreeDepth = InTreeDepth;
 }
 
 void USTNode::InitializeFromAsset(USkill& Asset)

@@ -25,5 +25,6 @@ class SKILLSYSTEM_API USkill : public UObject
 	TArray<FEditedDocumentInfo> LastEditedDocuments;
 #endif
 
-
+	UPROPERTY()
+	class USTCompositeNode* RootNode;
 };

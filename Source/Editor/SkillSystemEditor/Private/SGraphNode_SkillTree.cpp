@@ -25,6 +25,7 @@
 #include "SkillGraphNode_Service.h"
 #include "SkillGraphNode_Composite.h"
 #include "STCompositeNode.h"
+#include "SkillEdGraph.h"
 
 #define LOCTEXT_NAMESPACE "SkillTreeEditor"
 
@@ -458,7 +459,7 @@ void SGraphNode_SkillTree::MoveTo(const FVector2D & NewPosition, FNodeSet & Node
 					UEdGraphPin* ParentPin = Pin->LinkedTo[0];
 					if (ParentPin)
 					{
-						//STGraph->REbui
+						STGraph->RebuildChildOrder(ParentPin->GetOwningNode());
 					}
 				}
 			}

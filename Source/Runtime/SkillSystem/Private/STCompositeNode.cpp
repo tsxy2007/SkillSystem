@@ -16,7 +16,7 @@ USTCompositeNode::~USTCompositeNode()
 
 void USTCompositeNode::InitializeComposite(uint16 InLastExecuionIndex)
 {
-
+	LastExecutionIndex = InLastExecuionIndex;
 }
 
 int32 USTCompositeNode::GetChildIndex(const USTNode& ChildNode) const

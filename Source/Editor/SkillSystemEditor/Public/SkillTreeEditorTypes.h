@@ -17,7 +17,7 @@ struct FCompareNodeXLocation
 		{
 			return NodeA->NodePosY < NodeB->NodePosY;
 		}
-		return NodeA->NodePosX < NodeA->NodePosX;
+		return NodeA->NodePosX < NodeB->NodePosX;
 	}
 };
 

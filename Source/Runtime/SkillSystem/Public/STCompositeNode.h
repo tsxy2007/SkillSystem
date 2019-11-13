@@ -85,5 +85,7 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, Category = Composite)
 		uint32 bApplyDecoratorScope : 1;
+
+	uint16 LastExecutionIndex;
 };
 

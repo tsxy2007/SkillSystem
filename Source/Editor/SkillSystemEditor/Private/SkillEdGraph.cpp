@@ -7,6 +7,93 @@
 #include "SkillTreeEditorTypes.h"
 #include "STNode.h"
 #include "Skill.h"
+#include "STCompositeNode.h"
+#include "SkillTreeGraphNode.h"
+#include "SkillGraphNode_Root.h"
+
+
+namespace STGraphHelpers
+{
+	void InitializeInjectedNodes(USkillTreeGraphNode* GraphNode, USTCompositeNode* RootNode, uint16 ExecutionIndex, uint8 TreeDepth, int32 Index)
+	{
+
+	}
+
+	void VerifyDecorators(USkillTreeGraphNode* GraphNode)
+	{
+
+	}
+
+	void CreateChildren(USkill* STAsset, USTCompositeNode* RootNode, const USkillTreeGraphNode* RootEdNode, uint16* ExcutionIndex, uint8 TreeDepth)
+	{
+		if (RootEdNode == nullptr)
+		{
+			return;
+		}
+		RootNode->Children.Reset();
+		
+		int32 ChildIdx = 0;
+		for (int32 PinIdx = 0; PinIdx < RootEdNode->Pins.Num(); PinIdx++)
+		{
+			UEdGraphPin* Pin = RootEdNode->Pins[PinIdx];
+			if (Pin->Direction != EGPD_Output)
+			{
+				continue;
+			}
+			Pin->LinkedTo.Sort(FCompareNodeXLocation());
+			for (int32 Index = 0; Index < Pin->LinkedTo.Num(); ++Index)
+			{
+				USkillTreeGraphNode* GraphNode = Cast<USkillTreeGraphNode>(Pin->LinkedTo[Index]->GetOwningNode());
+				if (GraphNode == nullptr)
+				{
+					continue;;
+				}
+				// TODO: TASK
+
+
+				//comp
+				USTCompositeNode* CompositeInstance = Cast<USTCompositeNode>(GraphNode->NodeInstance);
+				if (CompositeInstance&&Cast<USkill>(CompositeInstance->GetOuter()) == nullptr)
+				{
+					CompositeInstance->Rename(nullptr, STAsset);
+				}
+
+				if (CompositeInstance == nullptr)
+				{
+					continue;
+				}
+
+				ChildIdx = RootNode->Children.AddDefaulted();
+				FSTCompositeChild& ChildInfo = RootNode->Children[ChildIdx];
+				ChildInfo.ChildComposite = CompositeInstance;
+
+				USTNode* ChildNode = CompositeInstance ? (USTNode*)CompositeInstance : nullptr;
+				if (ChildNode && Cast<USkill>(ChildNode->GetOuter()) == nullptr)
+				{
+					ChildNode->Rename(nullptr, STAsset);
+				}
+
+				InitializeInjectedNodes(GraphNode, RootNode, *ExcutionIndex, TreeDepth, ChildIdx);
+
+				// 
+
+				ChildNode->InitializeNode(RootNode, *ExcutionIndex, 0, TreeDepth);
+				*ExcutionIndex += 1;
+
+				VerifyDecorators(GraphNode);
+				
+				if (CompositeInstance)
+				{
+					CreateChildren(STAsset, CompositeInstance, GraphNode, ExcutionIndex, TreeDepth + 1);
+					CompositeInstance->InitializeComposite((*ExcutionIndex) - 1);
+				}
+				
+			}
+		}
+
+	}
+}
+
 
 USkillEdGraph::USkillEdGraph(const FObjectInitializer& Objectinitlializer)
 	:Super(Objectinitlializer)
@@ -116,7 +203,7 @@ void USkillEdGraph::CreateSTFromGraph(class USkillTreeGraphNode* RootEdNode)
 	
 
 	// connect tree nodes;
-	
+	STGraphHelpers::CreateChildren(STAsset, STAsset->RootNode, RootEdNode, &ExecutionIndex, TreeDepth + 1);
 
 	RootEdNode->bRootLevel = true;
 	
@@ -219,7 +306,14 @@ void USkillEdGraph::UpdateClassData()
 		USTGraphNode* Node = Cast<USTGraphNode>(Nodes[Idx]);
 		if (Node)
 		{
-
+			Node->UpdateNodeClassData();
+			for (int32 SubIdx = 0; SubIdx < Node->SubNodes.Num(); SubIdx++)
+			{
+				if (Node->SubNodes[SubIdx])
+				{
+					Node->UpdateNodeClassData();
+				}
+			}
 		}
 	}
 }
@@ -247,7 +341,7 @@ void USkillEdGraph::RebuildChildOrder(UEdGraphNode* ParentNode)
 		for (int32 i = 0; i < ParentNode->Pins.Num(); i++)
 		{
 			UEdGraphPin* Pin = ParentNode->Pins[i];
-			if (Pin->Direction == EGPD_Input)
+			if (Pin->Direction == EGPD_Output)
 			{
 				TArray<UEdGraphPin*> PrevOrder(Pin->LinkedTo);
 				Pin->LinkedTo.Sort(FCompareNodeXLocation());
@@ -257,7 +351,7 @@ void USkillEdGraph::RebuildChildOrder(UEdGraphNode* ParentNode)
 	}
 	if (bUpdateExecutionOrder)
 	{
-		//UpdateAsset(keepre)
+		UpdateAsset(KeepRebuildCounter);
 		Modify();
 	}
 }

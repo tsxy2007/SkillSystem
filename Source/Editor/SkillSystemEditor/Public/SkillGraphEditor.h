@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "EditorUndoClient.h"
 #include "GraphEditor.h"
+
+class USkill;
 /**
  * 
  */
@@ -36,9 +38,15 @@ public:
 
 	FGraphPanelSelectionSet GetSelectedNodes() const;
 
-
+	void OnPackageSaved(const FString& PackageFileName, UObject* Outer);
 
 	virtual void OnClassListUpdated();
+
+private:
+
+	USkill* SkillTree;
+
+	FDelegateHandle OnPackageSaveDelegateHandle;
 protected:
 	TWeakPtr<SGraphEditor> UpdateGraphEdptr;
 	TSharedPtr<FUICommandList> GraphEditorCommands;

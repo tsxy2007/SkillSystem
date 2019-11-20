@@ -27,4 +27,5 @@ FText USkillFactory::GetDisplayName() const
 {
 	return LOCTEXT("SkillFactoryDescription", "Skill");;
 }
+
 #undef LOCTEXT_NAMESPACE

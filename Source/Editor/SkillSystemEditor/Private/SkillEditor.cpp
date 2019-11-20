@@ -504,7 +504,15 @@ bool FSkillEditor::IsPropertyEditable() const
 
 void FSkillEditor::OnPackageSaved(const FString& PackageFileName, UObject* Outer)
 {
-
+	USkillEdGraph* MyGraph = Skill ? Cast<USkillEdGraph>(Skill->BTGraph) : NULL;
+	if (MyGraph)
+	{
+		const bool bUpdated = false; // 
+		if (bUpdated)
+		{
+			MyGraph->UpdateAsset(USkillEdGraph::ClearDebuggerFlags);
+		}
+	}
 }
 
 void FSkillEditor::OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent)

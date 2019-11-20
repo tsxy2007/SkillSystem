@@ -6,6 +6,7 @@
 #include "Framework/Application/SlateApplication.h"
 #include "Framework/Commands/GenericCommands.h"
 #include "SkillEdGraph.h"
+#include "Skill.h"
 
 #define LOCTEXT_NAMESPACE "SkillGraphEditor"
 FSkillGraphEditor::FSkillGraphEditor()
@@ -15,7 +16,6 @@ FSkillGraphEditor::FSkillGraphEditor()
 	{
 		Editor->RegisterForUndo(this);
 	}
-
 }
 
 FSkillGraphEditor::~FSkillGraphEditor()
@@ -204,6 +204,19 @@ FGraphPanelSelectionSet FSkillGraphEditor::GetSelectedNodes() const
 		CurrentSelection = FocusedGraphEd->GetSelectedNodes();
 	}
 	return CurrentSelection;
+}
+
+void FSkillGraphEditor::OnPackageSaved(const FString& PackageFileName, UObject* Outer)
+{
+	USkillEdGraph* MyGraph = SkillTree ? Cast<USkillEdGraph>(SkillTree->BTGraph) : NULL;
+	if (MyGraph)
+	{
+		const bool bUpdated = false;
+		if (bUpdated)
+		{
+			MyGraph->UpdateAsset(USkillEdGraph::ClearDebuggerFlags);
+		}
+	}
 }
 
 void FSkillGraphEditor::OnClassListUpdated()

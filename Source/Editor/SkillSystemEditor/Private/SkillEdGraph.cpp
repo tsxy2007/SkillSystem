@@ -10,6 +10,7 @@
 #include "STCompositeNode.h"
 #include "SkillTreeGraphNode.h"
 #include "SkillGraphNode_Root.h"
+#include "EdGraph/EdGraphSchema.h"
 
 
 namespace STGraphHelpers
@@ -216,7 +217,7 @@ void USkillEdGraph::CreateSTFromGraph(class USkillTreeGraphNode* RootEdNode)
 
 void USkillEdGraph::OnSubNodeDropped()
 {
-
+	NotifyGraphChanged();
 }
 
 void USkillEdGraph::OnNodesPasted(const FString& ImportStr)
@@ -296,7 +297,27 @@ bool USkillEdGraph::UpdateDeprecatedClasses()
 
 void USkillEdGraph::RemoveOrphanedNodes()
 {
+	TSet<UObject*> NodeInstances;
+	CollectAllNodeInstance(NodeInstances);
 
+	NodeInstances.Remove(nullptr);
+
+	TArray<UObject*> AllInners;
+
+	const bool bIncludeNestedObjects = false;
+	GetObjectsWithOuter(GetOuter(), AllInners, bIncludeNestedObjects);
+
+	for (auto InnerIt = AllInners.CreateConstIterator(); InnerIt; ++InnerIt)
+	{
+		UObject* TestObject = *InnerIt;
+		if (!NodeInstances.Contains(TestObject) && CanRemoveNestdObject(TestObject))
+		{
+			OnNodeInstanceRemoved(TestObject);
+
+			TestObject->SetFlags(RF_Transient);
+			TestObject->Rename(NULL, GetTransientPackage(), REN_DontCreateRedirectors | REN_NonTransactional | REN_ForceNoResetLoaders);
+		}
+	}
 }
 
 void USkillEdGraph::UpdateClassData()
@@ -372,13 +393,28 @@ void USkillEdGraph::AutoArrange()
 
 void USkillEdGraph::CollectAllNodeInstance(TSet<UObject*>& NodeInstances)
 {
-
+	for (int32 Idx = 0; Idx < Nodes.Num(); Idx++)
+	{
+		USTGraphNode* MyNode = Cast<USTGraphNode>(Nodes[Idx]);
+		if (MyNode)
+		{
+			NodeInstances.Add(MyNode->NodeInstance);
+			for (int32 SubIdx = 0; SubIdx < MyNode->SubNodes.Num(); SubIdx++)
+			{
+				if (MyNode->SubNodes[SubIdx])
+				{
+					NodeInstances.Add(MyNode->SubNodes[SubIdx]->NodeInstance);
+				}
+			}
+		}
+	}
 }
 
 bool USkillEdGraph::CanRemoveNestdObject(UObject* TestObject) const
 {
-
-	return true;
+	return !TestObject->IsA(UEdGraphNode::StaticClass()) &&
+		!TestObject->IsA(UEdGraph::StaticClass()) &&
+		!TestObject->IsA(UEdGraphSchema::StaticClass());
 }
 
 void USkillEdGraph::OnNodeInstanceRemoved(UObject* NodeInstance)

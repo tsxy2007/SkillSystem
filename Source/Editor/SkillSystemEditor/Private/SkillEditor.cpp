@@ -681,6 +681,14 @@ TSharedRef<class SGraphEditor> FSkillEditor::CreateGraphEditorWidget(UEdGraph* I
 
 void FSkillEditor::OnSelectedNodesChanged(const TSet<class UObject*>& NewSelection)
 {
+	SelectedNodesCount = NewSelection.Num();
+
+	USkillEdGraph* MyGraph = Cast<USkillEdGraph>(Skill->BTGraph);
+	if (SelectedNodesCount)
+	{
+
+	}
+
 
 }
 #undef LOCTEXT_NAMESPACE

@@ -2,6 +2,10 @@
 
 
 #include "SkillTreeComponent.h"
+#include "Skill.h"
+#include "SkillTreeManager.h"
+#include "VisualLogger.h"
+#include "STCompositeNode.h"
 
 // Sets default values for this component's properties
 USkillTreeComponent::USkillTreeComponent()
@@ -30,5 +34,44 @@ void USkillTreeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void USkillTreeComponent::StartTree(USkill& Asset)
+{
+
+	// ¼ÓÔØSkill 
+	USkillTreeManager* STManager = USkillTreeManager::Get(this);
+	if (STManager == nullptr)
+	{
+		UE_VLOG(GetOwner(), LogTemp, Warning, TEXT("USkillTreeComponent::StartTree"));
+		return;
+	}
+
+	if (!CanCastSkill(Asset))
+	{
+		return;
+	}
+
+	USTCompositeNode* RootNode = nullptr;
+	uint16 InstanceMemorySize = 0;
+	STManager->LoadTree(Asset, RootNode, InstanceMemorySize);
+	if (RootNode)
+	{
+		RootNode->DoActive();
+	}
+}
+
+void USkillTreeComponent::RunSkillTree(USkill* Skill)
+{
+	if (Skill)
+	{
+		StartTree(*Skill);
+	}
+}
+
+bool USkillTreeComponent::CanCastSkill(USkill& Skill)
+{
+
+	return true;
 }
 

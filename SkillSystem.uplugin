@@ -14,25 +14,25 @@
 	"IsBetaVersion": false,
 	"Installed": false,
 	"Modules": [
-		{
-			"Name": "SkillSystem",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"WhitelistPlatforms": [
-				"Win64",
-				"Mac", 
-				"PS4"
-			]
-		},
-		{
-			"Name": "SkillSystemEditor",
-			"Type": "Editor",
-			"LoadingPhase": "Default",
-			"WhitelistPlatforms": [
-				"Win64",
-				"Mac", 
-				"PS4"
-			]
-		}
+    {
+      "Name": "SkillSystem",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac",
+        "PS4"
+      ]
+    },
+    {
+      "Name": "SkillSystemEditor",
+      "Type": "Editor",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Mac",
+        "PS4"
+      ]
+    }
 	]
 }

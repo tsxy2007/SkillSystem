@@ -96,7 +96,7 @@ void UEdGraphSchema_SkillTree::GetGraphContextActions(FGraphContextMenuBuilder& 
 		for (const auto& NodeClass : NodeClasses)
 		{
 			const FText NodeTypeName = FText::FromString(FName::NameToDisplayString(NodeClass.ToString(), false));
-			TSharedPtr<FSTSchemaAction_NewNode> AddOpAction = USTGraphSchema::AddNewNodeAction(CompositesBuilder, NodeClass.GetCategory(), NodeTypeName, FText::GetEmpty());
+			TSharedPtr<FDTSchemaAction_NewNode> AddOpAction = USTGraphSchema::AddNewNodeAction(CompositesBuilder, NodeClass.GetCategory(), NodeTypeName, FText::GetEmpty());
 			UClass* GraphNodeClass = USkillGraphNode_Composite::StaticClass();
 
 			USkillTreeGraphNode* OpNode = NewObject<USkillTreeGraphNode>(ContextMenuBuilder.OwnerOfTemporaries, GraphNodeClass);
@@ -148,6 +148,29 @@ const FPinConnectionResponse UEdGraphSchema_SkillTree::CanCreateConnection(const
 	{
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, LOCTEXT("PinErrorSameNode", "Both are on the same node"));
 	}
+	const bool bPinASingleComposite = (A->PinType.PinCategory == USkillTreeEditorTypes::PinCategory_SingleComposite);
+	const bool bPinBSingleComposite = (B->PinType.PinCategory == USkillTreeEditorTypes::PinCategory_SingleComposite);
+	if ((A->Direction == EGPD_Input)&& (B->Direction == EGPD_Input))
+	{
+		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, LOCTEXT("PinErrorInput", "Both are on the same node"));
+	}
+	else if (B->Direction == EGPD_Output && A->Direction == EGPD_Output)
+	{
+		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, LOCTEXT("PinErrorOutput", "Both are on the same node"));
+	}
+
+	const bool bPinASingleLink = bPinASingleComposite;
+	const bool bPinBSingleLink = bPinBSingleComposite;
+
+	if (bPinASingleComposite && A->LinkedTo.Num() > 0)
+	{
+		return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_A, LOCTEXT("PinConnectReplace", "Replace connection"));
+	}
+	else if (bPinBSingleLink && B->LinkedTo.Num() > 0)
+	{
+		return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_B, LOCTEXT("PinConnectReplace", "Replace connection"));
+	}
+	
 	return FPinConnectionResponse(CONNECT_RESPONSE_MAKE, LOCTEXT("PinConnect", "Connect nodes"));
 }
 

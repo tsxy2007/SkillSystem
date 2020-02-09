@@ -136,10 +136,6 @@ void USkillEdGraph::UpdateAsset(int32 UpdateFlags /*= 0*/)
 		// TODO Debugger flag;
 		//parent chain
 		Node->ParentNode = nullptr;
-		for (int32 iAux = 0; iAux < Node->Services.Num(); iAux++)
-		{
-			Node->Services[iAux]->ParentNode = Node;
-		}
 
 		// prepare node instance 
 		USTNode* NodeInstance = Cast<USTNode>(Node->NodeInstance);

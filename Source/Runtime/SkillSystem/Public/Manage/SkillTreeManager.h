@@ -8,6 +8,25 @@
 
 class USkill;
 class USTCompositeNode;
+
+USTRUCT()
+struct FSkillTreeTemplateInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** behavior tree asset */
+	UPROPERTY()
+	USkill* Asset;
+
+	/** initialized template */
+	UPROPERTY(transient)
+	USTCompositeNode* Template;
+
+	/** size required for instance memory */
+	uint16 InstanceMemorySize;
+};
+DECLARE_STATS_GROUP(TEXT("Skill Tree"), STATGROUP_SkillTree, STATCAT_Advanced);
+DECLARE_CYCLE_STAT_EXTERN(TEXT("Load Time"), STAT_ST_SkillTree_LoadTime, STATGROUP_SkillTree, );
 /**
  * 
  */
@@ -20,4 +39,11 @@ class SKILLSYSTEM_API USkillTreeManager : public UObject
 public:
 	bool LoadTree(USkill& Asset, USTCompositeNode* Root, uint16& InstanceMemorySize);
 
+	static USkillTreeManager* Get(UObject* InWorldContext);
+	static int32 GetAlignedDataSize(int32 Size);
+protected:
+	UPROPERTY()
+	TArray<FSkillTreeTemplateInfo> LoadedTemplates;
+private:
+	static USkillTreeManager* Instance;
 };

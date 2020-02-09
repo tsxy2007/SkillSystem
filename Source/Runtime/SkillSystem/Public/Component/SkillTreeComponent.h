@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "SkillTreeComponent.generated.h"
 
+class USkill;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SKILLSYSTEM_API USkillTreeComponent : public UActorComponent
@@ -24,5 +25,11 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	
+	void StartTree(USkill& Asset);
 		
+	UFUNCTION(BlueprintCallable, Category = "ST")
+		void RunSkillTree(USkill* Skill);
+
+	bool CanCastSkill(USkill& Skill);
 };

@@ -9,7 +9,7 @@
 class USTNode;
 
 
-#define USE_SKILLTREE_DEBUGGER (1&&WITH_EDITORONLY_DATA)
+#define USE_SKILLTREE_DEBUGGER (2&&WITH_EDITORONLY_DATA)
 
 UENUM(BlueprintType)
 namespace ESTNodeResult

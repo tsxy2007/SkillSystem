@@ -32,7 +32,7 @@ void USTNode::InitializeNode(USTCompositeNode* InParentNode, uint16 InExecutionI
 
 void USTNode::InitializeFromAsset(USkill& Asset)
 {
-
+	TreeAsset = &Asset;
 }
 
 void USTNode::InitializeMemory(USkillTreeComponent& OwnerComp, uint8* NodeMemory, ESTMemoryInit::Type InitType) const
@@ -82,7 +82,14 @@ void USTNode::OnGameplayTaskDeactivated(UGameplayTask & Task)
 {
 }
 
+#if USE_SKILLTREE_DEBUGGER
 
+void USTNode::InitializeExecutionOrder(USTNode* NextNode)
+{
+	NextExecutionNode = NextNode;
+}
+
+#endif
 
 #if WITH_EDITOR
 
@@ -94,4 +101,15 @@ FString USTNode::GetNodeName() const
 {
 	return NodeName.Len() ? NodeName : USkillTreeTypes::GetShortTypeName(this);
 }
+
+uint16 USTNode::GetInstanceMemorySize() const
+{
+	return 0;
+}
+
+uint16 USTNode::GetSpecialMemorySize() const
+{
+	return 0;
+}
+
 #endif

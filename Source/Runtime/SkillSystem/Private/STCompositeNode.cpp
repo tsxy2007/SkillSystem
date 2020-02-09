@@ -2,6 +2,7 @@
 
 
 #include "STCompositeNode.h"
+#include "VisualLogger.h"
 
 USTCompositeNode::USTCompositeNode(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
@@ -37,4 +38,19 @@ bool USTCompositeNode::CanAbortLowerPriority() const
 bool USTCompositeNode::CanAbortSelf() const
 {
 	return false;
+}
+
+void USTCompositeNode::DoActive()
+{
+	UE_VLOG(GetOuter(), LogTemp, Warning, TEXT("USTCompositeNode::DoActive = "));
+	for (int32 i = 0; i < Children.Num(); i++)
+	{
+		Children[i].ChildComposite->DoActive();
+	}
+	DoDeactive();
+}
+
+void USTCompositeNode::DoDeactive()
+{
+	UE_VLOG(GetOuter(), LogTemp, Warning, TEXT("USTCompositeNode::DoDeactive = "));
 }

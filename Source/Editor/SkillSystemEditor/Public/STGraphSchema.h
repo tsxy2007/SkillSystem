@@ -10,21 +10,21 @@
 
 
 USTRUCT()
-struct SKILLSYSTEMEDITOR_API FSTSchemaAction_NewNode : public FEdGraphSchemaAction
+struct SKILLSYSTEMEDITOR_API FDTSchemaAction_NewNode : public FEdGraphSchemaAction
 {
 	GENERATED_USTRUCT_BODY();
 public:
 	UPROPERTY()
 		USTGraphNode* NodeTemplate;
 
-	FSTSchemaAction_NewNode()
+	FDTSchemaAction_NewNode()
 		:FEdGraphSchemaAction()
 		, NodeTemplate(nullptr)
 	{
 
 	}
 
-	FSTSchemaAction_NewNode(FText InNodeCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping)
+	FDTSchemaAction_NewNode(FText InNodeCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping)
 		:FEdGraphSchemaAction(MoveTemp(InNodeCategory), MoveTemp(InMenuDesc), MoveTemp(InToolTip), InGrouping)
 		, NodeTemplate(nullptr)
 	{}
@@ -43,7 +43,7 @@ public:
 };
 
 USTRUCT()
-struct SKILLSYSTEMEDITOR_API FSTSchemaAction_NewSubNode : public FEdGraphSchemaAction
+struct SKILLSYSTEMEDITOR_API FDTSchemaAction_NewSubNode : public FEdGraphSchemaAction
 {
 	GENERATED_USTRUCT_BODY();
 public:
@@ -51,12 +51,12 @@ public:
 		USTGraphNode* NodeTemplate;
 	UPROPERTY()
 		USTGraphNode* ParentNode;
-	FSTSchemaAction_NewSubNode()
+	FDTSchemaAction_NewSubNode()
 		:FEdGraphSchemaAction()
 		, NodeTemplate(nullptr)
 		, ParentNode(nullptr)
 	{}
-	FSTSchemaAction_NewSubNode(FText InNodeCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping)
+	FDTSchemaAction_NewSubNode(FText InNodeCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping)
 		:FEdGraphSchemaAction(MoveTemp(InNodeCategory), MoveTemp(InMenuDesc), MoveTemp(InToolTip), InGrouping)
 		, NodeTemplate(nullptr)
 		, ParentNode(nullptr)
@@ -91,7 +91,7 @@ public:
 	virtual void GetGraphNodeContextActions(FGraphContextMenuBuilder& ContextMenuBuilder, int32 SubNodeFlags) const;
 	virtual void GetSubNodeClasses(int32 SubNodeFlags, TArray<FSkillGraphNodeClassData>& ClassData, UClass*& GraphNodeClass) const;
 protected:
-	static TSharedPtr<FSTSchemaAction_NewNode> AddNewNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip);
-	static TSharedPtr<FSTSchemaAction_NewSubNode> AddNewSubNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip);
+	static TSharedPtr<FDTSchemaAction_NewNode> AddNewNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip);
+	static TSharedPtr<FDTSchemaAction_NewSubNode> AddNewSubNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip);
 
 };

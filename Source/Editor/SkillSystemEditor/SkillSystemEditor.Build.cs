@@ -10,7 +10,8 @@ public class SkillSystemEditor : ModuleRules
         PrivateIncludePaths.AddRange(
             new string[] {
                 "Editor/SkillSystemEditor/Private",
-			}
+                "Editor/SkillSystemEditor/Private/Details",
+            }
 		);
 
         PrivateIncludePathModuleNames.AddRange(

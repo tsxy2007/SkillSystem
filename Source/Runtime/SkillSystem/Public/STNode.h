@@ -63,6 +63,7 @@ public:
 	USTCompositeNode* GetParentNode()const;
 #if USE_SKILLTREE_DEBUGGER
 	USTNode* GetNextNode()const;
+	void InitializeExecutionOrder(USTNode* NextNode);
 #endif
 
 #if WITH_EDITOR
@@ -79,6 +80,8 @@ public:
 	bool HasInstance()const;
 	bool IsInstanced()const;
 
+	virtual uint16 GetInstanceMemorySize() const;
+	virtual uint16 GetSpecialMemorySize() const;
 
 	UPROPERTY(Category = Description, EditAnywhere)
 	FString NodeName;

@@ -81,6 +81,9 @@ public:
 	virtual bool CanAbortLowerPriority() const;
 	virtual bool CanAbortSelf()const;
 #endif
+public:
+	void DoActive();
+	void DoDeactive();
 
 protected:
 	UPROPERTY(EditAnywhere, Category = Composite)

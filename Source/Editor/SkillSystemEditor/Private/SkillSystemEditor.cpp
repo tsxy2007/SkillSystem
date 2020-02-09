@@ -10,6 +10,7 @@
 #include "EdGraphUtilities.h"
 #include "SGraphNode_SkillTree.h"
 #include "SGraphNodeST.h"
+#include "Details/FSkillTreeDetails.h"
 
 IMPLEMENT_GAME_MODULE(FSkillSystemEditorModule, SkillSystemEditor);
 DEFINE_LOG_CATEGORY(LogSkillEditor);
@@ -54,7 +55,7 @@ void FSkillSystemEditorModule::StartupModule()
 
 	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	//PropertyModule.RegisterCustomPropertyTypeLayout("BlackboardKeySelector", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBlackboardSelectorDetails::MakeInstance));
-	//PropertyModule.RegisterCustomClassLayout("BTDecorator_Blackboard", FOnGetDetailCustomizationInstance::CreateStatic(&FBlackboardDecoratorDetails::MakeInstance));
+	PropertyModule.RegisterCustomClassLayout("SKillTree", FOnGetDetailCustomizationInstance::CreateStatic(&FSkillTreeDetails::MakeInstance));
 	//PropertyModule.RegisterCustomClassLayout("BTDecorator", FOnGetDetailCustomizationInstance::CreateStatic(&FBehaviorDecoratorDetails::MakeInstance));
 	PropertyModule.NotifyCustomizationModuleChanged();
 }
@@ -93,7 +94,7 @@ void FSkillSystemEditorModule::ShutdownModule()
 	{
 		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 		//PropertyModule.UnregisterCustomPropertyTypeLayout("BlackboardKeySelector");
-		//PropertyModule.UnregisterCustomClassLayout("BTDecorator_Blackboard");
+		PropertyModule.UnregisterCustomClassLayout("SKillTree");
 		//PropertyModule.UnregisterCustomClassLayout("BTDecorator");
 		PropertyModule.NotifyCustomizationModuleChanged();
 	}

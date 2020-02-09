@@ -282,8 +282,7 @@ TSharedRef<SWidget> FSkillEditor::SpawnProperties()
 		.FillHeight(1.f)
 		.HAlign(HAlign_Fill)
 		[
-			SNew(STextBlock)
-			.Text(FText::FromString(TEXT("Properties")))
+			DetailsView.ToSharedRef()
 		];
 }
 

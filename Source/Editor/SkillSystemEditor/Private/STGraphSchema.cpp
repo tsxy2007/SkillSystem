@@ -17,7 +17,7 @@ namespace
 	const int32 NodeDistance = 60;
 }
 
-UEdGraphNode* FSTSchemaAction_NewNode::PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode /*= true*/)
+UEdGraphNode* FDTSchemaAction_NewNode::PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode /*= true*/)
 {
 	UEdGraphNode* ResultNode = NULL;
 	if (NodeTemplate != NULL)
@@ -62,7 +62,7 @@ UEdGraphNode* FSTSchemaAction_NewNode::PerformAction(class UEdGraph* ParentGraph
 	return ResultNode;
 }
 
-UEdGraphNode* FSTSchemaAction_NewNode::PerformAction(class UEdGraph* ParentGraph, TArray<UEdGraphPin*>& FromPins, const FVector2D Location, bool bSelectNewNode /*= true*/)
+UEdGraphNode* FDTSchemaAction_NewNode::PerformAction(class UEdGraph* ParentGraph, TArray<UEdGraphPin*>& FromPins, const FVector2D Location, bool bSelectNewNode /*= true*/)
 {
 	UEdGraphNode* ResultNode = NULL;
 	if (FromPins.Num())
@@ -82,24 +82,24 @@ UEdGraphNode* FSTSchemaAction_NewNode::PerformAction(class UEdGraph* ParentGraph
 	return ResultNode;
 }
 
-void FSTSchemaAction_NewNode::AddReferencedObjects(FReferenceCollector& Collector)
+void FDTSchemaAction_NewNode::AddReferencedObjects(FReferenceCollector& Collector)
 {
 	FEdGraphSchemaAction::AddReferencedObjects(Collector);
 	Collector.AddReferencedObject(NodeTemplate);
 }
 
-UEdGraphNode* FSTSchemaAction_NewSubNode::PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode /*= true*/)
+UEdGraphNode* FDTSchemaAction_NewSubNode::PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode /*= true*/)
 {
 	ParentNode->AddSubNode(NodeTemplate, ParentGraph);
 	return NULL;
 }
 
-UEdGraphNode* FSTSchemaAction_NewSubNode::PerformAction(class UEdGraph* ParentGraph, TArray<UEdGraphPin *>& FromPins, const FVector2D Location, bool bSelectNewNode /*= true*/)
+UEdGraphNode* FDTSchemaAction_NewSubNode::PerformAction(class UEdGraph* ParentGraph, TArray<UEdGraphPin *>& FromPins, const FVector2D Location, bool bSelectNewNode /*= true*/)
 {
 	return PerformAction(ParentGraph, NULL, Location, bSelectNewNode);
 }
 
-void FSTSchemaAction_NewSubNode::AddReferencedObjects(FReferenceCollector& Collector)
+void FDTSchemaAction_NewSubNode::AddReferencedObjects(FReferenceCollector& Collector)
 {
 	FEdGraphSchemaAction::AddReferencedObjects(Collector);
 
@@ -244,7 +244,7 @@ void USTGraphSchema::GetGraphNodeContextActions(FGraphContextMenuBuilder& Contex
 			USTGraphNode* OpNode = NewObject<USTGraphNode>(Graph, GraphNodeClass);
 			OpNode->ClassData = NodeClass;
 
-			TSharedPtr<FSTSchemaAction_NewSubNode> AddOpAction = USTGraphSchema::AddNewSubNodeAction(ContextMenuBuilder, NodeClass.GetCategory(), NodeTypeName, FText::GetEmpty());
+			TSharedPtr<FDTSchemaAction_NewSubNode> AddOpAction = USTGraphSchema::AddNewSubNodeAction(ContextMenuBuilder, NodeClass.GetCategory(), NodeTypeName, FText::GetEmpty());
 			AddOpAction->ParentNode = Cast<USTGraphNode>(ContextMenuBuilder.SelectedObjects[0]);
 			AddOpAction->NodeTemplate = OpNode;
 		}
@@ -256,16 +256,16 @@ void USTGraphSchema::GetSubNodeClasses(int32 SubNodeFlags, TArray<FSkillGraphNod
 
 }
 
-TSharedPtr<FSTSchemaAction_NewNode> USTGraphSchema::AddNewNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip)
+TSharedPtr<FDTSchemaAction_NewNode> USTGraphSchema::AddNewNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip)
 {
-	TSharedPtr<FSTSchemaAction_NewNode> NewAction = TSharedPtr<FSTSchemaAction_NewNode>(new FSTSchemaAction_NewNode(Category, MenuDesc, Tooltip, 0));
+	TSharedPtr<FDTSchemaAction_NewNode> NewAction = TSharedPtr<FDTSchemaAction_NewNode>(new FDTSchemaAction_NewNode(Category, MenuDesc, Tooltip, 0));
 	ContextMenuBuilder.AddAction(NewAction);
 	return NewAction;
 }
 
-TSharedPtr<FSTSchemaAction_NewSubNode> USTGraphSchema::AddNewSubNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip)
+TSharedPtr<FDTSchemaAction_NewSubNode> USTGraphSchema::AddNewSubNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip)
 {
-	TSharedPtr<FSTSchemaAction_NewSubNode> NewAction = TSharedPtr<FSTSchemaAction_NewSubNode>(new FSTSchemaAction_NewSubNode(Category, MenuDesc, Tooltip, 0));
+	TSharedPtr<FDTSchemaAction_NewSubNode> NewAction = TSharedPtr<FDTSchemaAction_NewSubNode>(new FDTSchemaAction_NewSubNode(Category, MenuDesc, Tooltip, 0));
 	ContextMenuBuilder.AddAction(NewAction);
 	return NewAction;
 }

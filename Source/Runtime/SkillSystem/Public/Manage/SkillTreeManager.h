@@ -37,9 +37,11 @@ class SKILLSYSTEM_API USkillTreeManager : public UObject
 	
 
 public:
-	bool LoadTree(USkill& Asset, USTCompositeNode* Root, uint16& InstanceMemorySize);
+	bool LoadTree(USkill& Asset, USTCompositeNode*& Root, uint16& InstanceMemorySize);
 
 	static USkillTreeManager* Get(UObject* InWorldContext);
+	void OnWorldCleanedUp(UWorld* World, bool bSessionEnded, bool bCleanupResources);
+	virtual UWorld* GetWorld() const override;
 	static int32 GetAlignedDataSize(int32 Size);
 protected:
 	UPROPERTY()

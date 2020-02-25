@@ -13,6 +13,7 @@
 #if WITH_EDITOR
 #include "Kismet2/KismetEditorUtilities.h"
 #endif // WITH_EDITOR
+#include "SkillSystem.h"
 
 DEFINE_STAT(STAT_ST_SkillTree_LoadTime);
 
@@ -82,7 +83,7 @@ USkillTreeManager::USkillTreeManager(const FObjectInitializer& Obj)
 
 }
 
-bool USkillTreeManager::LoadTree(USkill& Asset, USTCompositeNode* Root, uint16& InstanceMemorySize)
+bool USkillTreeManager::LoadTree(USkill& Asset, USTCompositeNode*& Root, uint16& InstanceMemorySize)
 {
 	SCOPE_CYCLE_COUNTER(STAT_ST_SkillTree_LoadTime);
 
@@ -136,11 +137,41 @@ bool USkillTreeManager::LoadTree(USkill& Asset, USTCompositeNode* Root, uint16& 
 
 USkillTreeManager* USkillTreeManager::Get(UObject* InWorldContext)
 {
-	if (Instance == nullptr)
+	USkillTreeManager* Manager = FSkillSystemModule::Get().GetCurrentManager();
+	if (Manager == nullptr)
 	{
-		Instance = NewObject<USkillTreeManager>(InWorldContext,TEXT("SkillTreeManager"));
+		if (UWorld* World = GEngine->GetWorldFromContextObject(InWorldContext, EGetWorldErrorMode::LogAndReturnNull))
+		{
+			// Only add functional test managers for the PIE and Game Worlds.
+			if (World->WorldType == EWorldType::PIE || World->WorldType == EWorldType::Game)
+			{
+				Manager = NewObject<USkillTreeManager>(World);
+				FSkillSystemModule::Get().SetManager(Manager);
+				Manager->AddToRoot();
+				FWorldDelegates::OnWorldCleanup.AddUObject(Manager, &USkillTreeManager::OnWorldCleanedUp);
+			}
+		}
+		else
+		{
+			ensureMsgf(false, TEXT("Tried to add a functional test manager to a non-game world."));
+		}
 	}
-	return Instance;
+
+	return Manager;
+}
+
+void USkillTreeManager::OnWorldCleanedUp(UWorld* World, bool bSessionEnded, bool bCleanupResources)
+{
+	UWorld* MyWorld = GetWorld();
+	if (MyWorld == World)
+	{
+		RemoveFromRoot();
+	}
+}
+
+UWorld* USkillTreeManager::GetWorld() const
+{
+	return GEngine->GetWorldFromContextObjectChecked(GetOuter());
 }
 
 int32 USkillTreeManager::GetAlignedDataSize(int32 Size)

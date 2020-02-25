@@ -259,23 +259,23 @@ void SGraphNode_SkillTree::UpdateGraphNode()
 						]
 					]
 					// OUTPUT PIN AREA
-					+SVerticalBox::Slot()
-					.AutoHeight()
-					[
-						SNew(SBox)
-						.MinDesiredHeight(NodePadding.Bottom)
+					+ SVerticalBox::Slot()
+						.AutoHeight()
 						[
-							SAssignNew(RightNodeBox,SVerticalBox)
-							+SVerticalBox::Slot()
-							.HAlign(HAlign_Fill)
-							.VAlign(VAlign_Fill)
-							.Padding(20.f,0.f)
-							.FillHeight(1.f)
-							[
-								SAssignNew(OutputPinBox,SHorizontalBox)
-							]
+							SNew(SBox)
+							.MinDesiredHeight(NodePadding.Bottom)
+						[
+							SAssignNew(RightNodeBox, SVerticalBox)
+							+ SVerticalBox::Slot()
+						.HAlign(HAlign_Fill)
+						.VAlign(VAlign_Fill)
+						.Padding(20.f, 0.f)
+						.FillHeight(1.f)
+						[
+							SAssignNew(OutputPinBox, SHorizontalBox)
 						]
-					]
+						]
+						]
 				]
 				+SOverlay::Slot()
 				.HAlign(HAlign_Fill)

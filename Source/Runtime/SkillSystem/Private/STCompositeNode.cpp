@@ -43,14 +43,16 @@ bool USTCompositeNode::CanAbortSelf() const
 void USTCompositeNode::DoActive()
 {
 	UE_VLOG(GetOuter(), LogTemp, Warning, TEXT("USTCompositeNode::DoActive = "));
-	for (int32 i = 0; i < Children.Num(); i++)
-	{
-		Children[i].ChildComposite->DoActive();
-	}
+
 	DoDeactive();
 }
 
 void USTCompositeNode::DoDeactive()
 {
 	UE_VLOG(GetOuter(), LogTemp, Warning, TEXT("USTCompositeNode::DoDeactive = "));
+
+	for (int32 i = 0; i < Children.Num(); i++)
+	{
+		Children[i].ChildComposite->DoActive();
+	}
 }

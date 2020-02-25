@@ -26,7 +26,7 @@ public:
 	{
 		if (USTGraphNode* STNode = Cast<USTGraphNode>(Node))
 		{
-			return SNew(SGraphNode_SkillTree, STNode);
+			return SNew(SGraphNodeST, STNode);
 		}
 		return NULL;
 	}

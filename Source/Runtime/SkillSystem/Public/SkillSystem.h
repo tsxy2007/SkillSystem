@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ModuleManager.h"
-
+class USkillTreeManager;
 DECLARE_LOG_CATEGORY_EXTERN(LogSkill, Verbose, All);
 /** Module interface for this game's loading screens */
 class FSkillSystemModule : public IModuleInterface
@@ -15,12 +15,12 @@ public:
 	virtual void ShutdownModule() override;
 	virtual bool IsGameModule() const override;
 
+	virtual void SetManager(class USkillTreeManager* NewManager);
+	virtual class USkillTreeManager* GetCurrentManager();
+	static FSkillSystemModule& Get();
 
-	static FSkillSystemModule& Get()
-	{
-		return FModuleManager::LoadModuleChecked< FSkillSystemModule >("SkillSystem");
-	}
 
+	TWeakObjectPtr<USkillTreeManager> SkillTreeManager;
 };
 
 
